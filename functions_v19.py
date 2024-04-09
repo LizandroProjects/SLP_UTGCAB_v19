@@ -9,7 +9,7 @@ EQUIPE: Carlos Paiva
         Thamirez
         Roymel
         Cesar
-        Lizandro
+        Lizandro Santos
         Dorigo
         Argimiro
         
