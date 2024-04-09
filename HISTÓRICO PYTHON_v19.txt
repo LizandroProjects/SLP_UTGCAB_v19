@@ -1,0 +1,563 @@
+####################### HISTÓRICO optLP_v19.py ##############################
+
+NOTA: Nessa versão, o código python se manteve o mesmo da versão anterior. No entanto, a simulação, (versão 19), agora é baseada no uso de virtual streams, para ativação e desativação das unidades, a ser explicada no parágrafo seguinte.
+
+++++++++++++Atualizações na simulação Hysys LP_19_(newcomp).hsc.++++++++++++
+
+A1. Foi criada a spreadsheet, STATUS UNIDADES, que recebe os valores dos status da unidades do python. Esses status, são importados do python, na coluna C [linha 3 até linha 12] para unidade e correntes GASDUC e MIX.
+	
+	NOTA1: Cada valor de status [0 ou 1] é exportado para o campo "multiplicador" da virtual stream.  
+
+A2. Foi criada, na saída de cada corrente que representa a vazão de uma unidade (corrente de referência), uma virtual stream (VS). Tal VS exporta os valores das propriedades: composição, vazão, temperatura e pressão para uma corrente "Cópia", que é direcionada para a unidade. A VS possui dois campos: multiplicador e offset. Esses valores são multiplicados e somados à vazão molar da corrente de referência. O campo multiplicador é conectado à planilha "STATUS UNIDADES", onde recebe o valor do Status [0 ou 1]. O campo offset recebe da planilha "STATUS UNIDADES" um valor arbitrário (1e6 m3/dia), que é considerado quando a unidade está desativada. Tal valor, só serve para simular a unidade de modo isolado, já que o valor da receita e custo nãos erão impactado pelas variáveis de decisão, pois será adicionada uma VS também na saída da unidade, conform explicado a seguir. 
+
+A3. Foi criada uma VS nas saídas das unidades, com criação de correntes Cópias dos produtos, mantendo-se a mesma lógicva implementada em A2, com excessão que o campo "offset" é sempre zero. Desse modo, se a unidade foir desativada, a vazão de saída resultante da VS é zero, anulando seu efeito na receita. 
+
+NOTA: Em resumo, a lógica de ativação e desativação das unidades é o seguinte:
+
+Status 0: unidade desativada; multiplicador da VS = 0; offset da VS = 1e6; vazão de entrada da unidade = 1e6; vazão de saída da unidade = 0;
+Status 1: unidade ativada;  multiplicador da VS = 1; offset da VS = 0; vazão de entrada da unidade = calculada no python; vazão de saída da unidade = simulada;
+
+A4. Os valores dos Status, são utilizados na planilha CUSTO, LInha I2 até R2. E são multiplicados pelas equações dos custos. Desse modo, o custo referente a uma determinada unidade é zero, caso o status seja zero. 
+
+
+
+
+####################### HISTÓRICO optLP_v18.py ##############################
+
+A1. Inclusão, da importação dos custos na função in Input_data, linha 1022, para importação dos custos para a simulação. Essa conexão é realizada na função Specvar, linha 789. 
+
+A2. Inclusão do dicionário status_unit, na linha 1025 da função Input_data, para cada unidade. Nesse dicionário, s status é 0 (unidade desligada) e status é 1 (unidade ligada).  Na linha 1038, inseri uma função que especifica os valores dos status em função da alocação máxima das capacidades. A ideia ligar status 0, quando a alocação for menor que um valor (pequeno).
+
+A3.  Os valores dos status das unidades são enviados para a simulação na função SpecVar, linha 904, para a spreadsheet STATUS UNIDADES, da simulação Essencial. 
+
+++++++++++++Atualizações na simulação Hysys LP_18_vA_(newcomp).hsc.++++++++++++
+
+A1. Foi criada a spreadsheet, STATUS UNIDADES, que recebe os valores dos status da unidades do python. 
+
+A2. Os valores dos Status, são utilizados na planilha CUSTO, LInha I2 até R2. E são multiplicados pelas equações dos custos. Desse modo, o custo referente a uma determinada unidade é zero, caso o status seja zero. 
+
+
+
+####################### HISTÓRICO optLP_v17.py ##############################
+
+A1. Correção da chamada da função para calcular derivada das retrições: LINHA 299 da função SLP:
+	y = Spec_prods(x, 0, obj); antes estava y = Spec_prods(x0, 0, obj). (Sabela que x = x0+delta). Esse erro estava prejudicando o cálculo da derivada das restrições.
+	
+A2. Na função SimulaLP, LINHA 1074, importo os valores da Receita e do Custo, para serem imprimidos no terminal do python, independentemente do tipo de função objetivo (para monitoramento). 
+	NOTA: Se a função objetivo for Receita: 
+		  Monitora-se: Receita_base (Pulp) ; Receita_max (obtida no simulador); Receita, Custo e Margem (obtidas no simulador).
+
+A3. Nessa versão, a planilha Input Data.xls está com todos os parâmetros e especificações iguais ao do arquivo "engine_inputs.json". 
+	NOTA: foram mantidas as restrições de capacidade.
+
+A4. Estou importando da simulação rigoroda o valor da temperatura de entrada da T01 da UPGN-II. Adotei essa estratégia provisória devido à dificuldade de convergência da simulação para valores elevados de temperatura do topo da T01 da UPGN-II, igual a 10 graus Celsius. A importação é realizada na linha 1182 da função simula_detalhada. A mesma é importada para a simulação Essencial da LINHA 877 da função SpecVar.
+
+						++++++++++++Atualizações na simulação Hysys LP_17A_(newcomp).hsc.++++++++++++
+						
+A1. Retirei o objeto Recycle, que estava conectado na corrente de saída da UPCGN. Aparentemente, as composições molares desse objeto que estavam sendon utilizadas para comparar as composições da corrente de reciclo da UPCGN, com desvio muito pequenos. Esse procedimento tornava o desvio das correntes de entrada e saída da UPCGN só dependentes da vazão. NOTA: Após fazer essa correção, notei que o desvio de composição da corrente de reciclo da UPCGN tende a ter uma menos taxa de redução, comaprando-se às versões anteriores. 
+
+A2. Especificação da temperatura e pressão da corrente de entrada da T01 da UPGN-II com inserção de um trocador de calor. 
+
+
+
+MONITORAMENTO DAS ATIVIDADES [TOTAL: 29; IMPLEMENTADAS: 5; PENDENTES : 24]
+
+A0. INCLUSÃO DOS CUSTOS;      																							[IMPLEMENTADO]
+A1. Script para geração de relatório em Excel como gráficos;   															[EM ANDAMENTO]
+A2. Interface Gráfica Simplificada com as principais informações geradas; 												[EM ANDAMENTO]
+A3. Simplificação (encapsulamento) da chamada dos argumentos das funções; 												[IMPLEMENTADO]
+A4. Testes da lógica de ativação e desativação das restrições;            												[IMPLEMENTADO]
+A5. Teste de robustez da otimização (influência de estimativas iniciais e limites).            							[PENDENTE]
+A6. Atualização da documentação da simulação essencial para possíveis apresentações futuras.   							[PENDENTE]
+A7. Utilização da simulação da URL (ao invés da simulação rigorosa completa), para importação de especificações. 		[PENDENTE]
+A8. Incluir no HYSYS os dois modos de cálculo do PCS pelo PCS do HYSYS e pela norma ANP a 20 C; 						[PENDENTE]
+A9. Incluir a restrição de vazão mínima de LGN para a UFL da REDUC;       												[PENDENTE]
+A10. Incluir a vazão mássica de Etano Equivalente (valores 100 e limite inferior);  									[PENDENTE]
+A11. Incluir o cálculo do Eteno equivalente (para 100%, 75% e 50% de etano);        									[PENDENTE]
+A12. Incluir o preço real de Venda da Carga da BRASKEM e o custo desta carga para a REDUC;   							[PENDENTE]
+A14. Incluir a margem (preço) do LGN sendo fracionado na UFL;                                							[PENDENTE]
+A15. OTIMIZAÇÃO LP VISANDO DIFERENTES MODOS DE OPERAÇÃO DAS UNIDADES.                        							[PENDENTE]
+	A15.1 Identificar os modos de operação possíveis de cada Unidade: operação normal, parada e etc...					[PENDENTE]
+	A15.2 Identificar as variaveis operacionais no PI e/ou operação														[PENDENTE]
+A16. Cálculo da especificação de C2 no GLP (a ser revisto na URGN);														[PENDENTE]
+A17. Cálculo das eficiências da Unidades;																				[PENDENTE]
+	A17.1. Cálculo do Conteúdo Energético da Carga total do Ativo														[PENDENTE]
+	A17.2. Cálculo do Conteúdo Monetário da Carga total do Ativo														[PENDENTE]
+	A17.3. Cálculo do Conteúdo Energético dos Efluentes do Ativo														[PENDENTE]
+	A17.4. Cálculo do Balanço Material e de Energia do Ativo															[PENDENTE]
+	A17.5. Deterninação da Eficiencia Monetária do Ativo																[PENDENTE]
+A18. Inclusão de novas variáveis de decisão																				[PENDENTE]
+	A18.1. Reciclo da UPGN (2 variaveis)																				[PENDENTE]
+	A18.2. Reciclo da URGN (3 variaveis)																				[PENDENTE]
+	A18.3. Sangrias (2 variaveis por unidade)																			[PENDENTE]
+A19. Cálculo do Reciclo da UPGN																							[PENDENTE]
+	A19.1. Criar um TEE na linha do reciclos com 2 saídas																[PENDENTE]
+	A19.2. Com Virtual stream criar 2 fluxos um reciclo para linha de gás efluente do 295 e para GV						[PENDENTE]
+	A19.3. No início, somente teremos fluxo para o GV																	[PENDENTE]
+A20. Cálculo do Reciclo da URGN																							[PENDENTE]
+	A20.1. Criar um TEE na linha do reciclos com 3 saídas																[PENDENTE]
+	A20.2. Com Virtual stream criar 2 fluxos um reciclo para URL, UPGN e para GV										[PENDENTE]
+	A20.3. No início, somente teremos fluxo para o GV																	[PENDENTE]
+A21. Inclusão da "Unidade" de Remoção de CO2 (copiar e simplificar da simulação detalhada)								[IMPLEMENTADO]
+A22. SPREADSHEET COM BALANÇO DE MASSA DAS UNIDADES																		[IMPLEMENTADO]
+A23. INSERIR FUNÇÃO PARA ANÁLISE DOS DADOS IMPORTADOS DA PLANILHA "INPUT DATA" (TRATAMENTO DE DADOS)					[PENDENTE]
+A24. Inserir função para análise de convergência da simulação Essencial													[PENDENTE]
+A25. INLUIR SPREADSHEET NO HYSYS DO BALANÇO DE MASSA DA CORRENTE DE RECICLO.											[IMPLEMENTADO]
+A26. VERIFICAR COMO TRATAR VAZÕES ZERADAS (limites mínimos da LP) e necessidade de incluir limites máximos		        [PENDENTE]
+A27. INSERIR NA SIMULAÇÃO UMA SPREADSHEED CENTRAL, CONTENDO TODAS AS VARIÁVEIS DE LEITURA E ESCRITA COM O PYTHON        [PENDENTE]
+A28. TESTAR OUTRAS TOOLBOXES DE OTIMIZAÇÃO (ex CPLEX, GUROBI)															[PENDENTE]
+A29. INCLUSÃO DE UMA ROTINA PYTHON QUE PERMITA AUTOMATIZAR OS ESTUDOS DE CASOS											[PENDENTE]
+
+					*ALTERAÇÔES na versão 16*
+
+
+
+####################### HISTÓRICO optLP_v16.py ##############################
+
+MONITORAMENTO DAS ATIVIDADES [TOTAL: 29; IMPLEMENTADAS: 5; PENDENTES : 24]
+
+A0. INCLUSÃO DOS CUSTOS;      																							[IMPLEMENTADO]
+A1. Script para geração de relatório em Excel como gráficos;   															[EM ANDAMENTO]
+A2. Interface Gráfica Simplificada com as principais informações geradas; 												[EM ANDAMENTO]
+A3. Simplificação (encapsulamento) da chamada dos argumentos das funções; 												[IMPLEMENTADO]
+A4. Testes da lógica de ativação e desativação das restrições;            												[PENDENTE]
+A5. Teste de robustez da otimização (influência de estimativas iniciais e limites).            							[PENDENTE]
+A6. Atualização da documentação da simulação essencial para possíveis apresentações futuras.   							[PENDENTE]
+A7. Utilização da simulação da URL (ao invés da simulação rigorosa completa), para importação de especificações. 		[PENDENTE]
+A8. Incluir no HYSYS os dois modos de cálculo do PCS pelo PCS do HYSYS e pela norma ANP a 20 C; 						[PENDENTE]
+A9. Incluir a restrição de vazão mínima de LGN para a UFL da REDUC;       												[PENDENTE]
+A10. Incluir a vazão mássica de Etano Equivalente (valores 100 e limite inferior);  									[PENDENTE]
+A11. Incluir o cálculo do Eteno equivalente (para 100%, 75% e 50% de etano);        									[PENDENTE]
+A12. Incluir o preço real de Venda da Carga da BRASKEM e o custo desta carga para a REDUC;   							[PENDENTE]
+A14. Incluir a margem (preço) do LGN sendo fracionado na UFL;                                							[PENDENTE]
+A15. OTIMIZAÇÃO LP VISANDO DIFERENTES MODOS DE OPERAÇÃO DAS UNIDADES.                        							[PENDENTE]
+	A15.1 Identificar os modos de operação possíveis de cada Unidade: operação normal, parada e etc...					[PENDENTE]
+	A15.2 Identificar as variaveis operacionais no PI e/ou operação														[PENDENTE]
+A16. Cálculo da especificação de C2 no GLP (a ser revisto na URGN);														[PENDENTE]
+A17. Cálculo das eficiências da Unidades;																				[PENDENTE]
+	A17.1. Cálculo do Conteúdo Energético da Carga total do Ativo														[PENDENTE]
+	A17.2. Cálculo do Conteúdo Monetário da Carga total do Ativo														[PENDENTE]
+	A17.3. Cálculo do Conteúdo Energético dos Efluentes do Ativo														[PENDENTE]
+	A17.4. Cálculo do Balanço Material e de Energia do Ativo															[PENDENTE]
+	A17.5. Deterninação da Eficiencia Monetária do Ativo																[PENDENTE]
+A18. Inclusão de novas variáveis de decisão																				[PENDENTE]
+	A18.1. Reciclo da UPGN (2 variaveis)																				[PENDENTE]
+	A18.2. Reciclo da URGN (3 variaveis)																				[PENDENTE]
+	A18.3. Sangrias (2 variaveis por unidade)																			[PENDENTE]
+A19. Cálculo do Reciclo da UPGN																							[PENDENTE]
+	A19.1. Criar um TEE na linha do reciclos com 2 saídas																[PENDENTE]
+	A19.2. Com Virtual stream criar 2 fluxos um reciclo para linha de gás efluente do 295 e para GV						[PENDENTE]
+	A19.3. No início, somente teremos fluxo para o GV																	[PENDENTE]
+A20. Cálculo do Reciclo da URGN																							[PENDENTE]
+	A20.1. Criar um TEE na linha do reciclos com 3 saídas																[PENDENTE]
+	A20.2. Com Virtual stream criar 2 fluxos um reciclo para URL, UPGN e para GV										[PENDENTE]
+	A20.3. No início, somente teremos fluxo para o GV																	[PENDENTE]
+A21. Inclusão da "Unidade" de Remoção de CO2 (copiar e simplificar da simulação detalhada)								[IMPLEMENTADO]
+A22. SPREADSHEET COM BALANÇO DE MASSA DAS UNIDADES																		[IMPLEMENTADO]
+A23. INSERIR FUNÇÃO PARA ANÁLISE DOS DADOS IMPORTADOS DA PLANILHA "INPUT DATA" (TRATAMENTO DE DADOS)					[PENDENTE]
+A24. Inserir função para análise de convergência da simulação Essencial													[PENDENTE]
+A25. INLUIR SPREADSHEET NO HYSYS DO BALANÇO DE MASSA DA CORRENTE DE RECICLO.											[IMPLEMENTADO]
+A26. VERIFICAR COMO TRATAR VAZÕES ZERADAS (limites mínimos da LP) e necessidade de incluir limites máximos		        [PENDENTE]
+A27. INSERIR NA SIMULAÇÃO UMA SPREADSHEED CENTRAL, CONTENDO TODAS AS VARIÁVEIS DE LEITURA E ESCRITA COM O PYTHON        [PENDENTE]
+A28. TESTAR OUTRAS TOOLBOXES DE OTIMIZAÇÃO (ex CPLEX, GUROBI)															[PENDENTE]
+A29. INCLUSÃO DE UMA ROTINA PYTHON QUE PERMITA AUTOMATIZAR OS ESTUDOS DE CASOS											[PENDENTE]
+
+					*ALTERAÇÔES na versão 16*
+
+A1. Nessa versão a temperatura da corrente P08 da UPGN-II passou a ser uma variável independente na simulação. Como essa variável é uma especificação da estratégia de simulação/otimização, a variável está especificada na planilha Input Data.xls e exportada para a simulação Essencial. 
+
+	NOTA: A simulação Essencial foi modificada, de modo a permitir a especificação da temperatura da corrente P08 da UPGN-II.
+	NOTA: Essa variável está configurada nas linhas 788 e 811 da função SpecVar. 
+
+		"e3 = espec['UPGNII_P04_temperatura [oC]'] # Temperatura da corrente P08"
+		MT_UPGN['P08'].Temperature.SetValue(e3,'C')    # Temperatura da corrente P08 da UPGN-II
+
+A2. Criação da opção de escolha do tipo de função objetivo: Margem, Receita ou Custo. 
+	Arquivo optLP_v16, LINHA 128.
+
+	Explicação: o tipo de função objetivo é armazenado na variável "Obj_type", que é argumento da função SLP.Na função SLP, linha 239, o tipo de função objetivo é exportado para a simulação Essencial, de acordo com a seguinte lógica:
+	Margem: Rec=1, Ct=1; Receita: Rec = 1, Ct = 0; Custo: Rec=0, Ct=1. Onde Rec e Ct são variáveis binárias. Esses valores são exporatados para o Spreadsheet f_OBJ da simulação Essencial. 
+
+A3. Na função SimulaLP, a função-objetivo é calculada por meio da importação do valor da função-objetivo, proveniente da spreadsheet f_OBJ da simulação Essencial. o valor da função objetivo dependerá do tipo de função:
+
+	Fobj = Receita * Rec - Custo * Ct.
+
+	Na planilha, os valores de Rec e Ct [entre 0 e 1] são importados do código Python. O valor de Fobj é exportado para o python.
+
+	NOTA: Esse modificação é válida tanto para o cálculo da função objetivo, como das derivadas. 
+
+
+**************************************************************************************
+
+	Atualizações na simulação Hysys LP_16_(newcomp).hsc.
+	++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+	[A1] Alteração da Unidade UPGN-II: Especificação da temperatura da corrente P08. Inclusão da válvula 	[VLV-102], com queda de pressão de 2001 kPa (conforme a simulação original). 
+
+	NOTA: Nessa versão a temperatura da corrente P08 da UPGN-II passou a ser uma variável independente na 	simulação. Como essa variável é uma especificação da estratégia de simulação/otimização, a variável está 	especificada na planilha Input Data.xls e exportada para a simulação Essencial.
+
+	NOTA: Essa variável está configurada nas linhas 788 e 811 da função SpecVar (do código em python) :
+
+	"e3 = espec['UPGNII_P04_temperatura [oC]'] # Temperatura da corrente P08"
+	MT_UPGN['P08'].Temperature.SetValue(e3,'C')    # Temperatura da corrente P08 da UPGN-II
+
+	[A2] Inclusão da Unidade de Recuperação de CO2 (URCO2):  Foi importada a unidade "simplificada" de remoção de 	CO2 da simulação original. 
+
+	NOTA: a carga térmica do trocador de calor da URCO2 não está sendo utilizada diretamente para o cálculo do 	custo, mas sim, a equação linearizada em relação à vazão da corrente C3. 
+
+	[A3] Criação da Spreadsheet f_OBJ: O objetivo dessa Spreadsheet é calcular a função objetivo, que pode ser 	Margem, somente Receita ou somente Custo, a depender dos valores da variáveis binárias Rec e Ct, conforme a 	equação:
+
+	Fobj = Receita * Rec - Custo * Ct.
+
+	Na planilha, os valores de Rec e Ct [entre 0 e 1] são importados do código Python. O valor de Fobj é 	exportado para o python.
+	
+	[A4]. INCLUSÃO DE SPREADSHEETS PARA QUANTIFICAR O BALANÇO MOLAR DAS CORRENTES DAS UNIDADES E TAMBÉM GLOBAL. 
+
+
+
+
+####################### HISTÓRICO optLP_v15.py ##############################
+
+ATIVIDADES REALIZADAS:
+
+A1. REORGANIZAÇÃO DO SPREADSHEET "RESTRIÇOES" DA SIMULAÇÃO ESSENCIAL E INCLUSÃO DE DUAS RESTRIÇõES FALTANTES na Spreadsheet "RESTRIÇÕES" PARA O GV.
+
+A2. CORREÇÃO DO CÁLCULO DA LINEARIZAÇÃO DAS RESTRIÇÕES, NO PYTHON.
+
+####################### HISTÓRICO optLP_v14.py ##############################
+
+ATIVIDADES REALIZADAS:
+
+A1. INCLUSÃO DO CUSTO NA FUNÇÃO-OBJETIVO DE MODO A OTIMIZAR A MARGEM  (RECEITA - CUSTO).
+ 
+    NOTA: FOI CRIADA UMA SPREADSHEET NA SIMULAÇÃO ESSENCIAL CONTENDO AS EQUAÇÕES DE CUSTO DOS COMPRESSORES E CONSUMO DE GÁS. TAIS EQUAÇÕES FORAM OBTIDAS POR MEIO DA SIMULAÇÃO RIGOROSA (UTGCAB_sem_manipular_URLs.HSC) A PARTIR DE VARIAÇÕES DAS VAZÕES NAS SUCÇÕES DOS COMPRESSORES E VERIFICAÇÃO DO CONSUMO DE ENERGIA. LOGO, AS EQUAÇÕES SÃO REPRESENTADAS PELA RELAÇÃO LINEAR DA ENERGIA EM RELAÇÃO ÀS VAZÕES. APÓS VERIFICAÇÃO DA SIMULAÇÃO RIGOROSA, ESSAS EQUAÇÕES FORAM INCORPORADAS À SIMULAÇÃO ESSENCIAL, NA SPREASHEET "CUSTOS".
+
+    NOTA: CRIEI CORRENTES DE REFERÊNCIA EM CADA EQUIPAMENTO, E PERTURBEI AS VAZÕES DESSAS CORRENTES, DE MODO A RELACIONÁ-LAS AOS CONSUMOS.
+
+    NOTA: TANTO O CUSTO COMO SUAS DERIVADAS SÃO CALCULADOS E IMPORTADOS PARA O CÓDIGO EM PYTHON.
+
+A2. INVERSÃO DA ORDEM NA ROTINA OPTLP_V14:
+
+ A etapa 2 (Hysysconect) agora é a etapa 1. A rotina (Inputdata) agora é a etapa 2. 
+
+####################### HISTÓRICO optLP_v13.py ##############################
+
+ATIVIDADES REALIZADAS: 
+
+OBS.: PARA RODAR, CONTINUAR USANDO A ROTINA optLP (é a principal). O arquivo functions_v13, contém as funções.
+
+A1. Reestruturação do código principal (optLP.py). Foram acrescentados comentários ao código para facuilitar a sua compreeensão. Essa é a rotina principal do programa para otimização da UTGCAB usando a estrtatégia de programação linear. Essa  rotina é dividida nas seguintes funções:
+    
+    Inputdata -> Função de leitura de dados de entrada a partir da planilha excel input na pasta de projeto
+    Hysysconect -> função usada para conecção com o HYSYS
+    InputObjects -> função usada para criação dos objetos de comunicação
+    SpecVar -> função usada para especificação de variáveis
+    SpecLP -> função usada para especificações do LP [valores dos limites e cargas] de acordo com sintaze do PULP
+    SLP -> função de chamada da função de otimização Programação Linear
+	Sim_rigorosa -> rodar a simulação rigorosa
+	f_Rel -> função para geração de relatório  [Em ANDAMENTO...]
+	f_Plot -> função para plotar principais resultados [Em ANDAMENTO...]
+
+A2. A rotina de cálculos, SLP, foi simplificada, de modo a retirar redundâncias identificadas, como cálculo da vazão de UPCGNs.
+
+A3. Proposta de normalização do cálculo do desvio, na rotina SLP, baseado na vazão e composição da corrente de reciclo da UPCGn, embora não esteja sendo utilizada no momento. 
+
+A4. Proposta de inclusão de um parâmetro "flag" ao final de cada função, para facilitar a identificação de possíveis erros de cálculo ou comunicação (a discutir).
+
+A5. Nessa versão, estamos rodando, na Etapa 2 (usando a função Sim_rigorosa), a simulação rigorosa (com base na simulação rigorosa utilizada na versão offline). O objetivo é usar dados dessa simulação (composições da corrente de topo da T01 das URLs) para serem utilizadas como especificação da simulação Essencial. Os resultados úteis oriundos da simulação rigorosa são armazenados no dicionário R_especs. [ver linha 76]. 
+   Obs: A rotina "simula_detalhada" é utilizada nesse caso!
+   ObsII: Os procedimentos utilizados na versão da função "simula_detalhada" foram mantidos.
+   Obs: As especificações de vazão de SANGRIAS foram mantidas zeradas na simulação ESSENCIAL.
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+A6. Atualização na Simulação Essencial LP_13_(newcomp).hsc:
+
+ [i] Inclusão dos compressores de gás do coletor 295 para as "unidades" GASDUC, URLs e UPGNs. 
+     Observações: Como as correntes de fluxo estão separadas, usamos três compressores (K-GASDUC, K-URL e K-UPGN). Foram mantidas as condiçoes do compressor utilizado na simulação
+	 rigorosa (pressão de saída de 78,1 kgf/cm2 g e eficiência adiabática de 60%).
+
+ [ii] Na unidades URL-I, URL-II e URL-III, na T01 especificamos: fração molar de C1 no fundo (corrente 42) e fração molar de C2 e C3 no topo (corrente 26). 
+ 
+ [iii] Especificação da pressão de entrada da corrente de reciclo da UPCGN [Gás de Reciclo UPCGNs RCY BP] igual ao valor da pressão de gás residual da saída da UPCGN-II [Gás Residual]. Essa conexaõ é realizada na Spreadsheet CONEXÕES.
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+
+ATIVIDADES EM ANDAMENTO: 
+
+A0. INCLUSÃO DOS CUSTOS
+A1. Script para geração de relatório em Excel como gráficos;
+A2. Interface Gráfica Simplificada com as principais informações geradas;
+A3. Simplificação (encapsulamento) da chamada dos argumentos das funções.
+A4. Testes da lógica de ativação e desativação das restrições;
+A5. Teste de robustez da otimização (influência de estimativas iniciais e limites).
+A6. Atualização da documentação da simulação essencial para possíveis apresentações futuras.
+
+ATIVIDADES PENDENTES:
+	
+ A1. Incluir no HYSYS os dois modos de cálculo do PCS pelo PCS do HYSYS e pela norma ANP a 20 C;
+ A2. Incluir a restrição de vazão mínima de LGN para a UFL da REDUC;
+ A3. Incluir a vazão mássica de Etano Equivalente (valores 100 e limite inferior);
+ A4. Incluir o cálculo do Eteno equivalente (para 100%, 75% e 50% de etano);
+ A5. Incluir o preço real de Venda da Carga da BRASKEM e o custo desta carga para a REDUC;
+ A6. Incluir a margem (preço) do LGN sendo fracionado na UFL;
+
+ATIVIDADES FUTURAS:
+
+A1. OTIMIZAÇÃO LP VISANDO DIFERENTES MODOS DE OPERAÇÃO DAS UNIDADES.
+	A1.1 Identificar os modos de operação possíveis de cada Unidade: operação normal, parada e etc...
+	A1.2 Identificar as variaveis operacionais no PI e/ou operação
+
+	ATIVIDADES PENDENTES:
+	
+	A1. Cálculo da especificação de C2 no GLP (a ser revisto na URGN);
+	A2. Cálculo das eficiências da Unidades;
+		1. Cálculo do Conteúdo Energético da Carga total do Ativo
+		2. Calculo do Conteúdo Monetário da Carga total do Ativo
+		3. Cálculo do Conteúdo Energético dos Efluentes do Ativo
+		4. Cálculo do Balanço Material e de Energia do Ativo
+		5. Deterninação da Eficiencia Monetária do Ativo
+	A3. Inclusão de novas variáveis de decisão
+		1. Reciclo da UPGN (2 variaveis)
+		2. Reciclo da URGN (3 variaveis)
+		3. Sangrias (2 variaveis por unidade)
+	A4. Cálculo do Reciclo da UPGN
+		1. Criar um TEE na linha do reciclos com 2 saídas
+		2. Com Virtual stream criar 2 fluxos um reciclo para linha de gás efluente do 295 e para GV
+		3. No início, somente teremos fluxo para o GV
+	A5. Cálculo do Reciclo da URGN
+		1. Criar um TEE na linha do reciclos com 3 saídas
+		2. Com Virtual stream criar 2 fluxos um reciclo para URL, UPGN e para GV
+		3. No início, somente teremos fluxo para o GV
+	A6. Cálculo dos custos;
+	A7. Inclusão da "Unidade" de Remoção de CO2 (copiar e simplificar da simulação detalhada)
+
+
+ 
+
+
+####################### HISTÓRICO optLP_v11.py ##############################
+
+ATIVIDADES EM ANDAMENTO: 
+
+A1. Script para geração de relatório em Excel como gráficos;
+A2. Interface Gráfica Simplificada com as principais informações geradas;
+A3. Simplificação (encapsulamento) da chamada dos argumentos das funções.
+A4. Testes da lógica de ativação e desativação das restrições;
+A5. Teste de robustez da otimização (influência de estimativas iniciais e limites).
+A6. Atualização da documentação da simulação essencial para possíveis apresentações futuras.
+A7. Melhoria da lógica para o cálculo do desvio do Reciclo da UPCGN (no caso de frações molares zeradas).
+
+ATIVIDADES FUTURAS:
+
+A8. OTIMIZAÇÃO LP VISANDO DIFERENTES MODOS DE OPERAÇÃO DAS UNIDADES?
+ 
+OBS:. Essa versão roda com o script functions_v10 e a simulação LP_010_vA_(newcomp).hsc. As modificações da versão da simulação  LP_010_vA_newcomp).hsc estão relatadas na spreadsheet ANOTAÇÔEs dentro da simulação.
+
+	++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+	Atualizações na simulação Hysys LP_010_vA_(newcomp).hsc.
+	
+	ATIVIDADES PENDENTES:
+	
+	A1. Cálculo das eficiências da Unidades;
+	A2. Inclusão de novas variáveis de decisão?
+	A3. Influência das Sangrias;
+	A4. Cálculo dos reciclos;
+	A5. Cálculo dos custos;
+	A6. Inclusão da "Unidade" de Remoção de CO2?
+	
+	
+	ATIVIDADES REALIZADAS:
+	
+	1. Representação dos HEADERS de baixa e média pressões no flowsheet principal. 
+
+	2. Inclusão dos compressores das correntes As (provenientes do SG295). 
+	
+	3. Inclusão de uma torres Desetanizadora na unidade UPGN-II. 
+	
+	
+	++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+
+....voltando ao PYTHON:
+
+
+ATIVIDADES REALIZADAS: 
+
+
+	1. [LINHA 443] Correção do cálculo de Restrições ativas, com a inclusão das restrições máximas.
+	
+	2. REMOÇÃO DO CÁLCULO Da vazão de água para especificar POA.
+
+
+
+
+#######################HISTÓRICO optLP_v9.py ##############################
+
+ATIVIDADES EM ANDAMENTO: 
+
+A1. Script para geração de relatório em Excel como gráficos;
+A2. Interface Gráfica Simplificada com as principais informações geradas;
+A3. Simplificação (encapsulamento) da chamada dos argumentos das funções.
+A4. Testes da lógica de ativação e desativação das restrições;
+A5. Teste de robustez da otimização (influência de estimativas iniciais e limites).
+A6. Atualização da documentação da simualção essencial para possíveis apresentações futuras.
+
+ATIVIDADES FUTURAS:
+
+A7. OTIMIZAÇÃO LP VISANDO DIFERENTES MODOS DE OPERAÇÃO DAS UNIDADES?
+ 
+OBS:. Essa versão roda com o script functions_v9 e a simulação LP_09_vD_(newcomp).hsc. As modificações da versão da simulação  LP_09_vD_(newcomp).hsc estão relatadas na spreadsheet ANOTAÇÔEs dentro da simulação.
+
+	++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+	Atualizações na simulação Hysys LP_09_vD_(newcomp).hsc.
+	
+	ATIVIDADES PENDENTES:
+	
+	A1. Cálculo da especificação de C2 no GLP (a ser revisto na URGN);
+	A2. Cálculo das eficiências da Unidades;
+	A3. Inclusão de novas variáveis de decisão?
+	A4. Influência das Sangrias;
+	A5. Cálculo dos reciclos;
+	A6. Cálculo dos custos;
+	A7. Inclusão da "Unidade" de Remoção de CO2?
+	
+	
+	ATIVIDADES REALIZADAS:
+	
+	1. Os divisores implementados para separar os fluxos A1,A2,A3,A4,B1 e B2 ["D_URGN_1", "D_REDUC_1", "D_URL_1"] foram simplificados e concentrados em um único divisor "D_A". A distribuição das vazões não foi alterada, já que as mesmas são calculadas na spreadsheet "Vazões". Do mesmo modo, os divisores "D_REDUC_2" e "D_URGN_2" foram simplificados para um único divisor "D_B". 
+
+	2. Uma pequena vazão da carga das URLs ("CARGA+_MIX) de 1 m3/dia, foi desviada para possibilitar estimar a vazão necessária para especificar o POA do GV. Com essa vazão saindo da URL para o flowsheet principal, foi possível criar uma virtual-stream, importando as composições dessa corrente para uma corrente denominada "H2O_poa". A corrente "H2O_poa" é misturada à corrente POA, de modo a se quantificar a vazão necessária para se atingir um ponto de orvalho de água de -45 Celsius. Esse cálculo pe realizado no script Python, conforme explicado no histórico da versão 9. 
+	
+	3. MUDANÇA NO MODO DE ESPECIFICAÇÃO DA TORRE DESETA DA UPGN2 (DISCUTIR COM O PAIVA, ainda não estpa ok)
+	++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+
+....voltando ao PYTHON:
+
+
+ATIVIDADES REALIZADAS: 
+
+1. Implementação da função Restrições (implementada dentro da rota functions_v9). Essa função obtém os valores das especificações de gás de venda e GLP calculadas no simulador Hysys. 
+A função "Restrições" recebe os valores das variáveis de decisão (vazões) e importa da spreadsheet "Restrições" do Hysys os valores das restrições calculadas nas condições simuladas. 
+	
+	Obs: Essa função é chamada na LINHA 227, 247 e 282.
+	(Os valores serão utilizados para reportar os valores e também inlcuir o cálculo das restrições na Programação Linear) LP;
+		
+2. Inclusão da lógica de Restrições Ativas: Caso alguma restrição esteja ativa (violação de mín ou máx), o algoritmo irá incluí-la na Progração Linear (PL). 
+	obs1: Os valores das restrições (max e min) foram inseridos no início do código (LINHA 132)
+	
+	A Lógica das restrições ativas se encontra na LINHA 346. 
+	Na inclusão das restrições verifica-se se há violação das restrições a partir dos valores de y_base, obtidos por meio da função Restrições. Caso haja violação, a equação de restrição é adicionanda à PL por meio do objeto "model" (LINHA 357). Esse procedimento é realizado para todas as variáveis.
+	
+	obs2: Note que cada restrição foi linearizada, de acordo com o cálculo da primeira derivada em relação à variável de decisão MIX (TEMOS QUE VERIFICAR NO CASO DO GLP). O CÁLCULO DA DERRIVADA É COMENTADO NO TÓPICO 3.
+	
+	obs3. Ainda iremos inserir algumas restrições, de acordo com o material de especifciações de GN enviado por e-mail.
+	obs4: Falta inseir as restrições de máximo.
+	
+3. O cálculo das derivadas das restrições (LINHA 282) é realizado perturbando-se a vazão do MIX (1e4 m3/dia) e obtendo-se a variação das restrições em relação a essa variação. As derivadas são então armazenadas na variável dRest.
+
+4. Criação da função f_POA para o cálulo do Ponto de Orvalho de Água. Essa função tem como argumentos de entrada a vazão da carga_MIX+ (que "sairia" da URL) e um valor constante "deltaM" que significa uma perturbação positiva em relação à vazão  carga_MIX+.
+
+	obs1: Na simulação, a corrente "H2O_poa" representa uma corrente de refência em relação à vazão carga_MIX+, onde são copiadas as composições. Essa corrente é então misturada a corrente de saída do GV (na P=1 bar), de modo a ser ajustada até resultar em um POA de -45 Celsius. 
+
+	A função f_POA retorna então os valores da vazão F_MIX_plus_base (vazão base inicial da carga_MIX+), POA_base (antes da perturbação) e POA_after (após a perturbação). Com isso, foi utilizada a equação linear, explicitada na LINHA 256, para se estimar o valor da vazão necessária da carga_MIX+ para especificar o GV em POA=-45C. 
+    obs2: Essa vazão foi conferida no simulador, e os resultados deram próximos, mas não exatos (erro de 2%).
+	obs3: Esse cálculo de ajuste é atualizado a cada iteração, pois verificou-se que não há uma relação linear entre a vazão de cargaMIX+ e o POA. 
+	obs3: Utilizei o saturador de água, porém, o resultado não coincide com a quantidade de água necessária a partir da vazão de cargaMIX (a composição do gás afeta o POA).
+	
+5. Criação de uma função "Plot_derivatives" para plotar as derivadas a cada iteração. Essa função é invocada na LINHA 487.
+
+6. Substituição dos valores limites mínimos das cargas (0), para (1e-6), para evitar problemas na simulação com cergas zeradas. 
+
+
+										ABAIXO SÃO OS HISTÓRICOS PASSADOS
+
+
+
+
+
+#######################HISTÓRICO optLP_v8.py ##############################
+1. Retirada das declarações das variáveis seguintes do loop iterativo e colocadas no início do loop: 
+
+	LINHA 183
+
+	nD = 11 # Número de variáveis de decisão
+	Receita=np.zeros(nD)
+	dR_dF=np.zeros(nD)
+	dC4_dF=np.zeros(nD)
+	df=0
+	rx = nD-1
+	
+2. Atualização das derivadas somente nos dois primeiros ciclos. [Fizemos isso depois de checar que a relação da magnitude das derivadas se preserva, embora haja variação absoluta. A intenção foi reduzir o custo computacional]
+
+	LINHA 189
+	
+3. Importação das vazões de entrada (correntes de gás após os vasos) das unidades URGN, URLs e UPGN para o PYTHON;
+
+	LINHAS 59-63 
+	
+	OBS: Note que esses objetos foram inseridos como argumentos na função simulaLP. 
+		 Note (LINHA 353) que os valores das vazões e desvios relativos em relação à cargas também são imprimidos no python.
+		 
+4. No arquivo functions_v8, na função simulaLP, calcula-se as vazões mencionadas no item 3. LINHA 62.
+	
+
+######################HISTÓRICO optLP v7.py ###################################
+
+1. Correção da composição de C4+ (de iC4 até nC10)
+	LINHA 120 da function_v7
+	"    C4  = MaterialStreams['GV_20C1atm'].ComponentMolarFractionValue[3:12] # COMPOSICOES De C4+ no GAS de VENDA"
+	
+2. Simplificação da equação linear da composição de C4 
+   LINHA 253 do código prinicpal optLP_v7:
+   " C4_L = C4_base  + dC4_dF[10]*(G_302toMIX-G_302toMIX_0) "
+   
+3. Ajuste da magnitude (delta) da variável de decisão usada para o cálculo da derivada.
+   LINHA 157:
+   "delta[i]=1e4# Valor da perturbação".
+   
+#######################HISTÓRICO optLP v6.py #####################################################################################################
+
+1. Inclusão das composições do dos reciclos para o cálculo do desvio.
+
+	Linha 92 (leitura das composições) variável G_Rec_UPCGNs_C_0 
+	Linha 93 (desvio inicial)
+	Obs.: atualização do valor inicial da vazão de recilco para o cálculo do desvio. Estou utilizando o valor da vazão de saída (que é comparado com a entrada).
+	Linhas 95-99 (equação do desvio inicial) e LINHAS 260-265 (equação do desvio)
+	
+2. Plotagem do desvio: LINHA 326.
+
+3. Impressão do Desvio: LINHA 307
+
+#######################HISTÓRICO optLP v5.py #####################################################################################################
+
+1. INCLUSÃO DAS COMPOSIÇÕES DE IC4 E NC4 DO GÁS DE VENDA COMO SAÍDA DA FUNÇÃO SimulaLP (FUNÇÃO FUNCTIONS). LINHA 120-122.
+
+2. INCLUSÃO DAS SAÍDAS DE C4S NAS CHAMADAS DA FUNÇÃO SimulaLP (LINHAS 112, 118, 132, 250. 
+
+3. CÁLCULO DAS DERIVADAS DE C4S NO GÁS DE VENDA EM RELAÇÃO ÀS VAZÕES (LINHA 134).
+
+4. DEFINIÇÃO DA RESTRIÇÃO MÁXIMA DE C4 NO GÁS DE VENDA (LINHA 80).
+
+5. EQUAÇÃO LINEAR DO C4 NO GÁS DE VENDA PARA INCLUSÃO NO PROBLEMA LP (LINHA 205-210).
+
+6. INEQUAÇÃO DA RESTRIÇÃO DE C4 (LINHA 230).
+
+#######################HISTÓRICO optLP v4.py #####################################################################################################
+
+1. CORREÇÃO DA EXPORTAÇÃO DO VALOR DA RECEITA (CÉLULA D6) 
+Spread_sheet_1.Cell('D6').CellValue = precos['GASDUC']/ft (LINHA 54)
+
+2. EXPORAÇÃO DA COMPOSIÇÃO DA CORRENTE DE RECICLO DA UPCGN (entrada) (LINHA 81) DA FUNÇÃO SimulaLP
+
+3. Leitura da COMPOSIÇÃO DA CORRENTE DE RECICLO DA UPCGN (saída) (LINHA 168) DA FUNÇÃO SimulaLP
+
+4. Leitura dos valores do gás a ser alocado (LINHA 164 - 166). 
+
+5. Leitura das composições e vazão molar da corrente de reciclo entrada (LINHA 167-168).
+
+6. Procedimento iterativo ((LINHA 194) baseado na convergência da vazão de reciclo desvio = (G_Rec_UPCGNs - G_Rec_UPCGNs_0) / G_Rec_UPCGNs_0, onde G_Rec_UPCGNs_0 é vazão da iteração anterior e G_Rec_UPCGNs é a vazão da iteração atual.
+
+7. PLOTAGEM DO HISTÓRICO DOS VALORES DA RECEITA (LINHA 388).
+
+8. SEPAREI A FUNÇÃO SimulaLP NO ARQUIVO FUNCTION.PY, PARA MELHORAR VISUALIZAÇÃO DO CÓDIGO.
+
+#######################HISTÓRICO optLP v3.py #####################################################################################################
+
+COMEÇAMOS A RELATAR APÓS A VERSÃO 3.

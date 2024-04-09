@@ -1,0 +1,101 @@
+{
+	"restricoes_qualidade": {
+		"GV_C1": {
+			"inferior": 85.0,
+			"superior": 100.0,
+			"unidade": "%"
+		},
+		"GV_C2": {
+			"inferior": 0.01,
+			"superior": 12,
+			"unidade": "%"
+		},
+		"GV_C3": {
+			"inferior": 0.01,
+			"superior": 6.0,
+			"unidade": "%"
+		},
+		"GV_C4p": {
+			"inferior": 0.01,
+			"superior": 3.0,
+			"unidade": "%"
+		},
+		"GV_CO2": {
+			"inferior": 0.01,
+			"superior": 3.0,
+			"unidade": "%"
+		},
+		"GV_inertes": {
+			"inferior": 0.01,
+			"superior": 6.0,
+			"unidade": "%"
+		},
+		"GV_PCS": {
+			"inferior": 35,
+			"superior": 43,
+			"unidade": "MJ/m3"
+		},
+		"GV_POA": {
+			"inferior": -200,
+			"superior": -45,
+			"unidade": "oC"
+		},
+		"GV_POH": {
+			"inferior": -200,
+			"superior": -0.1,
+			"unidade": "oC"
+		},
+		"GV_Wobbe": {
+			"inferior": 46.5,
+			"superior": 53.5,
+			"unidade": "MJ/m3"
+		},
+		"GV_No_metano": {
+			"inferior": 65,
+			"superior": 120,
+			"unidade": "-"
+		},
+		"GLP_C2": {
+			"inferior": 0.01,
+			"superior": 11,
+			"unidade": "%"
+		},
+		"GLP_C5p": {
+			"inferior": 0.01,
+			"superior": 2,
+			"unidade": "%"
+		},
+		"GLP_rho": {
+			"inferior": 100,
+			"superior": 575,
+			"unidade": "kg/m3"
+		}
+	},
+	"LB otimizacao": {
+		"Q_MIX_UTGCAB": 0,
+		"Q_BypassU211": 0,
+		"Q_299toUPGN": 0,
+		"Q_GASDUC_II": 1e6,
+		"Q_Carga_URGN": 1.5e6,
+		"Q_295toUPGN": 0,
+		"Q_299to295": 0,
+		"Q_URCO2toU211": 0,
+		"TEE_GR_UPGNII": 0,
+		"TEE_GR_URGN": 0
+	},
+	"Custos unitarios": {
+		"Eletricidade": {
+			"valor": 80.3814,
+			"unidade": "$/MW.h"
+		},
+		"Gas combustivel": {
+			"valor": 119.8162,
+			"unidade": "$/(mil m3)"
+		}
+	},
+	"Outros opt": {
+		"method": "Powell",
+		"maxfev": 300,
+		"penal_factor": 1e2
+	}
+}

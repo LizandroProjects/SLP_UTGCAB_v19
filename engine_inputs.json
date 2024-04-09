@@ -1,0 +1,455 @@
+{
+    "simulacao": {
+        "disponibilidade": {
+            "GASDUC II": {
+                "valor": 1.3e6,
+                "unidade": "m3/d_(gas)"
+            },
+            "MIX UTGCAB": {
+                "valor": 4.0e6,
+                "unidade": "m3/d_(gas)"
+            },
+            "UPGN II": {
+                "valor": 4.2e6,
+                "unidade": "m3/d_(gas)"
+            },
+            "URGN": {
+                "valor": 2.0e6,
+                "unidade": "m3/d_(gas)"
+            },
+            "URL I": {
+                "valor": 4.5e6,
+                "unidade": "m3/d_(gas)"
+            },
+            "URL II": {
+                "valor": 4.1e6,
+                "unidade": "m3/d_(gas)"
+            },
+            "URL III": {
+                "valor": 4.3e6,
+                "unidade": "m3/d_(gas)"
+            }
+        },
+        "priorizacaoCarga": [
+            "URL I",
+            "URL II",
+            "URL III",
+			"UPGN II",
+            "URGN",
+			"GASDUC II",
+            "MIX UTGCAB"
+        ],
+        "Rota 2": {
+            "Priorizacao": "UPGN II",
+            "Carga UPGN II": "Bypass SG-302"
+        },
+        "coletores": {
+            "SG-295": {
+                "composicao": [
+                    79.46,
+					8.13,
+					5.79,
+					0.98,
+					2.08,
+					0.49,
+					0.62,
+					0.44,
+					0.34,
+					0.15,
+					0.06,
+					0.02,
+					0.65,
+					0.79
+                ],
+                "carga": {
+                    "valor": 2105949.5,
+                    "unidade": "m3/d_(gas)"
+                },
+                "pressao": {
+                    "valor": 56.8,
+                    "unidade": "kg/cm2_g"
+                },
+                "temperatura": {
+                    "valor": 25.0,
+                    "unidade": "C"
+                }
+            },
+            "SG-299": {
+                "composicao": [
+                    79.46,
+					8.13,
+					5.79,
+					0.98,
+					2.08,
+					0.49,
+					0.62,
+					0.44,
+					0.34,
+					0.15,
+					0.06,
+					0.02,
+					0.65,
+					0.79
+                ],
+                "carga": {
+                    "valor": 2105949.5,
+                    "unidade": "m3/d_(gas)"
+                },
+                "pressao": {
+                    "valor": 76.5,
+                    "unidade": "kg/cm2_g"
+                },
+                "temperatura": {
+                    "valor": 25.0,
+                    "unidade": "C"
+                }
+            },
+            "SG-302": {
+                "composicao": [
+                    76.07,
+					11.26,
+					6.29,
+					1.10,
+					1.88,
+					0.30,
+					0.33,
+					0.13,
+					0.02,
+					0.00,
+					0.00,
+					0.00,
+					0.71,
+					1.92
+                ],
+                "carga": {
+                    "valor": 19125293,
+                    "unidade": "m3/d_(gas)"
+                },
+                "pressao": {
+                    "valor": 89.0,
+                    "unidade": "kg/cm2_g"
+                },
+                "temperatura": {
+                    "valor": 11.5,
+                    "unidade": "C"
+                }
+            }
+        },
+        "gasResidualParaReprocessamento": {
+            "TEE_GR_UPGNII": {
+                "valor": 0.0,
+                "unidade": "%"
+            },
+            "TEE_GR_URGN": {
+                "valor": 50.0,
+                "unidade": "%"
+            }
+        },
+        "gasCombustivel": {
+            "modoCalculo": "Definir %",
+            "GasCombustivel": {
+				"valor": 1.95,
+				"unidade": "%"
+			}
+        },
+        "queima": {
+            "valor": 0.25,
+			"unidade": "%"
+        },
+        "URGN": {
+            "vaso1": {
+                "pressao": {
+                    "valor": 56.40,
+                    "unidade": "kg/cm2_g"
+                }
+            },
+            "vaso2": {
+                "temperatura": {
+                    "valor": -30.20,
+                    "unidade": "C"
+                }
+            }
+        },
+        "UPGNII": {
+            "GLP": {
+                "etano": {
+					"valor": 6.00,
+					"unidade": "%"
+					}
+            },
+            "P04": {
+                "temperatura": {
+                    "valor": -30.0,
+                    "unidade": "C"
+                }
+            },
+            "T01": {
+                "temperaturaTopo": {
+                    "valor": 10,
+                    "unidade": "C"
+                }
+            }
+        },
+        "URLI": {
+            "T01": {
+                "recuperacaoMetanoTopo": {
+					"valor": 0.9993,
+					"unidade": ""
+                },
+                "recuperacaoEtanoFundo": {
+					"valor": 0.7,
+					"unidade": ""
+                }
+            }
+        },
+        "URLII": {
+            "T01": {
+                "recuperacaoMetanoTopo": {
+                    "valor": 0.9993,
+                    "unidade": ""
+                },
+                "recuperacaoEtanoFundo": {
+                    "valor": 0.7,
+                    "unidade": ""
+                }
+            }
+        },
+        "URLIII": {
+            "T01": {
+                "recuperacaoMetanoTopo": {
+                    "valor": 0.9993,
+                    "unidade": ""
+                },
+                "recuperacaoEtanoFundo": {
+                    "valor": 0.7,
+                    "unidade": ""
+                }
+            }
+        },
+        "sangria": {
+            "URLI/II": {
+                "valor": 700.0,
+                "unidade": "m3/d"
+            },
+            "URLIII": {
+                "valor": 0.0,
+                "unidade": "m3/d"
+            }
+        },
+        "UPCGNII": {
+            "GLP": {
+                "etano": {
+                    "valor": 6.00,
+                    "unidade": "%"
+                }
+            },
+            "vaso1": {
+                "pressao": {
+                    "valor": 46.1,
+                    "unidade": "kg/cm2_g"
+                }
+            },
+            "T02-Desbutanizadora": {
+                "recuperacaoC4GLP": {
+                    "valor": 0.975,
+                    "unidade": ""
+                },
+                "recuperacaoC5+Fundo": {
+                    "valor": 0.98,
+                    "unidade": ""
+                }
+            }
+        },
+        "UPCGNIII": {
+            "GLP": {
+                "etano": {
+                    "valor": 6.00,
+                    "unidade": "%"
+                }
+            },
+            "vaso1": {
+                "pressao": {
+                    "valor": 46.1,
+                    "unidade": "kg/cm2_g"
+                }
+            },
+            "T02-Desbutanizadora": {
+                "recuperacaoC4GLP": {
+                    "valor": 0.975,
+                    "unidade": ""
+                },
+                "recuperacaoC5+Fundo": {
+                    "valor": 0.98,
+                    "unidade": ""
+                }
+            }
+        },
+        "UPCGNIV": {
+            "GLP": {
+                "etano": {
+                    "valor": 6.00,
+                    "unidade": "%"
+                }
+            },
+            "vaso1": {
+                "pressao": {
+                    "valor": 46.1,
+                    "unidade": "kg/cm2_g"
+                }
+            },
+            "T02-Desbutanizadora": {
+                "recuperacaoC4GLP": {
+                    "valor": 0.975,
+                    "unidade": ""
+                },
+                "recuperacaoC5+Fundo": {
+                    "valor": 0.98,
+                    "unidade": ""
+                }
+            }
+        }
+    },
+    "otimizacao": {
+        "executarOtimizacao": true,
+		"metodoOtimizacao": "SLP",
+        "maxIteracoes": 300,
+        "fatorPenalizacao": 0.5,
+        "manipuladas": {
+            "299to295": {
+                "lb": 0.0,
+                "ub": 0.0,
+                "unidade": "m3/d_(gas)"
+            },
+            "GASDUC-II": {
+                "lb": 0.0,
+                "ub": 0.0,
+                "unidade": "m3/d_(gas)"
+            },
+            "MIX UTGCAB": {
+                "lb": 0.0,
+                "ub": 0.0,
+                "unidade": "m3/d_(gas)"
+            },
+            "295toUPGN": {
+                "lb": 0.0,
+                "ub": 0.0,
+                "unidade": "m3/d_(gas)"
+            },
+            "299toUPGN": {
+                "lb": 0.0,
+                "ub": 0.0,
+                "unidade": "m3/d_(gas)"
+            },
+            "URCO2toU211": {
+                "lb": 0.0,
+                "ub": 0.0,
+                "unidade": "m3/d_(gas)"
+            },
+            "BypassU211": {
+                "lb": 0.0,
+                "ub": 0.0,
+                "unidade": "m3/d_(gas)"
+            },
+            "Carga URGN": {
+                "lb": 0.0,
+                "ub": 0.0,
+                "unidade": "m3/d_(gas)"
+            },
+            "Carga URL I": {
+                "lb": 0.0,
+                "ub": 0.0,
+                "unidade": "m3/d_(gas)"
+            },
+            "Carga URL III": {
+                "lb": 0.0,
+                "ub": 0.0,
+                "unidade": "m3/d_(gas)"
+            },
+            "TEE_GR_UPGN": {
+                "lb": 0.0,
+                "ub": 0.0,
+                "unidade": ""
+            },
+            "TEE_GR_URGN": {
+                "lb": 0.0,
+                "ub": 0.0,
+                "unidade": ""
+            }
+        },
+        "preco": {
+            "cambio": {
+                "valor": 5.0,
+                "unidade": "R$/USD"
+            },
+            "custoOportunidade": {
+                "GASDUC": {
+                    "valor": 4.27,
+                    "unidade": "USD/MMbtu"
+                },
+                "GV": {
+                    "valor": 5.08,
+                    "unidade": "USD/MMbtu"
+                },
+                "LGN": {
+                    "valor": 8.43,
+                    "unidade": "USD/MMbtu"
+                },
+                "GLP": {
+                    "valor": 11.59,
+                    "unidade": "USD/MMbtu"
+                },
+                "C5+": {
+                    "valor": 13.182,
+                    "unidade": "USD/MMbtu"
+                }
+            },
+            "custoEnergiaEletrica": {
+                "custoUnitario": {
+                    "valor": 406.73,
+                    "unidade": "R$/MWh"
+                }
+            },
+            "custoGasCombustivel": {
+                "custoUnitario": {
+                    "valor": 606.27,
+                    "unidade": "R$/mil m3"
+                }
+            },
+            "custosProdutosQuimicos": {
+                "aminaAtivadaURCO2": {
+                    "valor": 8.21,
+                    "unidade": "USD/kg"
+                },
+                "propanoURGN": {
+                    "valor": 10.97,
+                    "unidade": "USD/MMbtu"
+                },
+                "propanoUPGNII": {
+                    "valor": 10.97,
+                    "unidade": "USD/MMbtu"
+                },
+                "leitoRemocaoH2SUTGNI": {
+                    "valor": 406.00,
+                    "unidade": "mil R$/vaso"
+                },
+                "leitoRemocaoH2SUTGNII": {
+                    "valor": 406.00,
+                    "unidade": "mil R$/vaso"
+                },
+                "peneiraMolecularURLs": {
+                    "valor": 800.00,
+                    "unidade": "mil R$/URL"
+                },
+                "carvaoAtivadoURCO2": {
+                    "valor": 60.0,
+                    "unidade": "R$/kg"
+                },
+                "carvaoAtivadoMEG": {
+                    "valor": 60.0,
+                    "unidade": "R$/kg"
+                }
+            }
+        },
+        "funcaoObjetivo": "receita"
+    }
+}
