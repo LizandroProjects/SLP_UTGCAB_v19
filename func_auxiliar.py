@@ -323,6 +323,32 @@ def PCSCalculadoISO(FracaoMolar):
 "*** Função para executar a simulação detalhada e retornar os resultados ***"
 def simula_detalhada(simCase, config, inputs, cargas):
     
+    '''
+    *************************************************************************************************************************************
+    [1] DESCRIÇÃO: Função que roda a simulação detalhada 
+    
+    [2] EXPLICAÇÃO: Essa rotina é utilizada para especificar algumas variáveis das UNIDADES URLS, URGN, UPGN e UPCGN. Além
+    disso importaremos os valores dos preços e condições dos coletores. A maior parte
+    das variáveis é especificada no arquivo Input_Data.xlsx. Outras variáveis (frações molares da T02 das URLs) são calculadas na 
+    simulação rogorosa (utilizada no modo offline) e importadas para a simulação Essencial.
+    
+    [3] DADOS DE ENTRADA: 
+        edata   -> Dicionário resultante da leitura da dedos da planilha Input_Data.xlsx;
+        obj     -> Dicionário contendo os objetos resultantes das variáveis e spreadsheets do hsysys que serão utilizados
+        R_especs-> Dicionário contendo as especificações importadas da simulação rigorosa
+    
+    [4] DADOS DE SAÌDA: 
+        cod_SpecVar  -> Flag para indicar sucesso ou insucesso do cálculo
+        
+    [5] OBSERVAÇÕES: Ao longo do código adicionaremos algumas anotações para facilitar a compreensão das considerações utilizadas
+    
+    
+    Histórico:
+        
+    (a) 08/04/2024 - Inclusão de dados da corrente de CO2 das URLS para serem exportadas para a simulação Essencial
+    *************************************************************************************************************************************
+    '''  
+    
     simCase.Solver.CanSolve = False  
 
     # Criando objetos auxiliares
@@ -1162,14 +1188,20 @@ def simula_detalhada(simCase, config, inputs, cargas):
     C2_URLI = simCase.Flowsheet.Flowsheets('TPL4').Flowsheets('TPL5').MaterialStreams["26"].ComponentMolarFractionValue[1]   # Fração molar de C2 no topo da T01 da URL-I
     C3_URLI = simCase.Flowsheet.Flowsheets('TPL4').Flowsheets('TPL5').MaterialStreams["26"].ComponentMolarFractionValue[2]   # Fração molar de C3 no topo da T01 da URL-II
     C1_URLI = simCase.Flowsheet.Flowsheets('TPL4').Flowsheets('TPL5').MaterialStreams["42"].ComponentMolarFractionValue[0]   # Fração molar de C1 no fundo da T01 da URL-I
+    CO2_URLI = simCase.Flowsheet.Flowsheets('TPL4').Flowsheets('TPL5').MaterialStreams["26"].ComponentMolarFractionValue[13]   # Fração molar de C1 no topo da T01 da URL-I
+    
     
     C2_URLII = simCase.Flowsheet.Flowsheets('TPL4').Flowsheets('TPL6').MaterialStreams["26"].ComponentMolarFractionValue[1]   # Fração molar de C2 no topo da T01 da URL-I
     C3_URLII = simCase.Flowsheet.Flowsheets('TPL4').Flowsheets('TPL6').MaterialStreams["26"].ComponentMolarFractionValue[2]   # Fração molar de C3 no topo da T01 da URL-II
     C1_URLII = simCase.Flowsheet.Flowsheets('TPL4').Flowsheets('TPL6').MaterialStreams["42"].ComponentMolarFractionValue[0]   # Fração molar de C1 no fundo da T01 da URL-I
+    CO2_URLII = simCase.Flowsheet.Flowsheets('TPL4').Flowsheets('TPL6').MaterialStreams["26"].ComponentMolarFractionValue[13]  # Fração molar de CO2 no topo da T01 da URL-I
+    
     
     C2_URLIII = simCase.Flowsheet.Flowsheets('TPL4').Flowsheets('TPL10').MaterialStreams["26"].ComponentMolarFractionValue[1]   # Fração molar de C2 no topo da T01 da URL-I
     C3_URLIII= simCase.Flowsheet.Flowsheets('TPL4').Flowsheets('TPL10').MaterialStreams["26"].ComponentMolarFractionValue[2]   # Fração molar de C3 no topo da T01 da URL-II
     C1_URLIII = simCase.Flowsheet.Flowsheets('TPL4').Flowsheets('TPL10').MaterialStreams["42"].ComponentMolarFractionValue[0]   # Fração molar de C1 no fundo da T01 da URL-I
+    CO2_URLIII = simCase.Flowsheet.Flowsheets('TPL4').Flowsheets('TPL10').MaterialStreams["26"].ComponentMolarFractionValue[13]  # Fração molar de CO2 no topo da T01 da URL-I
+    
     
     Temp_V03 = MaterialStreams_UPGN['Fundo do V-03'].Temperature.Getvalue("C") # Para a simulação Essencial
     T_P24_UPGN = MaterialStreams_UPGN['P24'].Temperature.Getvalue("C") # Para a simulação Essencial [Entrada da torre T01]
@@ -1183,6 +1215,9 @@ def simula_detalhada(simCase, config, inputs, cargas):
                 'C2_URLIII':C2_URLIII,
                 'C3_URLIII':C3_URLIII,
                 'C1_URLIII':C1_URLIII,
+                'CO2_URLI':CO2_URLI,
+                'CO2_URLII':CO2_URLII,
+                'CO2_URLIII':CO2_URLIII,                
                 'Temp_V03':Temp_V03,   
                 'T_P24_UPGN': T_P24_UPGN,
                 }

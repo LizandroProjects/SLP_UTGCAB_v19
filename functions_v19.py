@@ -690,6 +690,8 @@ def SpecVar(edata, obj, R_especs):
         cod_SpecVar  -> Flag para indicar sucesso ou insucesso do cálculo
         
     [5] OBSERVAÇÕES: Ao longo do código adicionaremos algumas anotações para facilitar a compreensão das considerações utilizadas
+    
+    [6] Última Modificação: Importação dos valores das especificações de fração molar de CO2 nas URLs
     *************************************************************************************************************************************
     '''
     
@@ -738,6 +740,13 @@ def SpecVar(edata, obj, R_especs):
     C1_URLIII = R_especs['C1_URLIII']
     # Temp_V03 = R_especs['Temp_V03']
     T_P24_UPGN = R_especs['T_P24_UPGN']
+    
+    # Valores de CO2 das URLS
+    
+    CO2_URLI   = R_especs['CO2_URLI']
+    CO2_URLII  = R_especs['CO2_URLII']
+    CO2_URLIII = R_especs['CO2_URLIII']    
+    
     
   
     'Enviando as condiçoes dos coletores para a simulação em HYSYS'
@@ -841,6 +850,10 @@ def SpecVar(edata, obj, R_especs):
     e27 = espec['UPCGNIII_T02_recupercao_C5p_fundo [-]']
     e28 = espec['UPCGNIV_T02_recupercao_C5p_fundo [-]']
     
+    e29 = CO2_URLI
+    e30 = CO2_URLII
+    e31 = CO2_URLIII
+    
     '******************************************************************************************************************************'
 
 
@@ -871,6 +884,12 @@ def SpecVar(edata, obj, R_especs):
     SS_URLIII.Cell('C2').CellValue = e9 # FRAÇÃO MOLAR de C1 no fundo da T01 DA URL-1 (CALCULADA PELA SIMULAÇÃO RIGOROSA)
     SS_URLIII.Cell('C3').CellValue = e10 # FRAÇÃO MOLAR DE C2 NO TOPO DA T01 DA URL-1 (CALCULADA PELA SIMULAÇÃO RIGOROSA)  
     SS_URLIII.Cell('C4').CellValue = e13 # FRAÇÃO MOLAR DE C2 NO TOPO DA T01 DA URL-1 (CALCULADA PELA SIMULAÇÃO RIGOROSA) 
+    
+    
+    # Versão 19 [CO2 nas URLs]
+    SS_URLI.Cell('C5').CellValue = e29 # FRAÇÃO MOLAR de C1 no fundo da T01 DA URL-1 (CALCULADA PELA SIMULAÇÃO RIGOROSA)
+    SS_URLII.Cell('C5').CellValue = e30 # FRAÇÃO MOLAR DE C2 NO TOPO DA T01 DA URL-1 (CALCULADA PELA SIMULAÇÃO RIGOROSA)  
+    SS_URLIII.Cell('C5').CellValue = e31 # FRAÇÃO MOLAR DE C2 NO TOPO DA T01 DA URL-1 (CALCULADA PELA SIMULAÇÃO RIGOROSA)
   
     'Exportando as vazões das SANGRIAS'
 
