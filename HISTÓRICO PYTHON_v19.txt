@@ -19,6 +19,8 @@ Status 1: unidade ativada;  multiplicador da VS = 1; offset da VS = 0; vazão de
 
 A4. Os valores dos Status, são utilizados na planilha CUSTO, LInha I2 até R2. E são multiplicados pelas equações dos custos. Desse modo, o custo referente a uma determinada unidade é zero, caso o status seja zero. 
 
+A5. Os valores das especificações de CO2 da corrente de topo da torre Deseta das URLs são importadas da simulação rigorosa para a simulação Essencial.
+OBS.: Foram corrigidas as frações mássicas de C1 (fundo) e C2,C3 (topo) da torre Deseta das URLs. 
 
 
 
