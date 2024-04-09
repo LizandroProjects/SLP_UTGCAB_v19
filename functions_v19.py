@@ -5,7 +5,7 @@ FUNÇÃO QUE CONTÉM AS FUNÇÕES AUXILIARES PARA O PROGRAMA
 
 AUTORES: LADES(PEQ-COPPE) / UFF / CENPES 
 
-EQUIPE: Carlos Paiva
+EQUIPE: Carlos Rodrigues Paiva
         Thamirez
         Roymel
         Cesar
