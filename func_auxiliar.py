@@ -1188,7 +1188,7 @@ def simula_detalhada(simCase, config, inputs, cargas):
     C2_URLI = simCase.Flowsheet.Flowsheets('TPL4').Flowsheets('TPL5').MaterialStreams["26"].ComponentMolarFractionValue[1]   # Fração molar de C2 no topo da T01 da URL-I
     C3_URLI = simCase.Flowsheet.Flowsheets('TPL4').Flowsheets('TPL5').MaterialStreams["26"].ComponentMolarFractionValue[2]   # Fração molar de C3 no topo da T01 da URL-II
     C1_URLI = simCase.Flowsheet.Flowsheets('TPL4').Flowsheets('TPL5').MaterialStreams["42"].ComponentMolarFractionValue[0]   # Fração molar de C1 no fundo da T01 da URL-I
-    CO2_URLI = simCase.Flowsheet.Flowsheets('TPL4').Flowsheets('TPL5').MaterialStreams["26"].ComponentMolarFractionValue[13]   # Fração molar de C1 no topo da T01 da URL-I
+    CO2_URLI = simCase.Flowsheet.Flowsheets('TPL4').Flowsheets('TPL5').MaterialStreams["26"].ComponentMolarFractionValue[13]   # Fração molar de CO2 no topo da T01 da URL-I
     
     
     C2_URLII = simCase.Flowsheet.Flowsheets('TPL4').Flowsheets('TPL6').MaterialStreams["26"].ComponentMolarFractionValue[1]   # Fração molar de C2 no topo da T01 da URL-I

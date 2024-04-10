@@ -84,7 +84,7 @@ print('')
 print('ETAPA [3]: CONEXÃO COM HYSYS PARA RODAR SIMULAÇÃO ESSENCIAL')
 print('***********************************************************')
 sleep(15)  # Aguardar 15 segundos para nova conexão....da simulação Essencial (FAÇO ISSO PARA EVITAR ERRO NA COMUNICAÇÃO)
-filename = 'LP_19_vL_(newcomp).hsc'   #VERSÃO ATUAL DO ARQUIVO HYSYS DA SIMULAÇÃO ESSENCIAL'
+filename = 'LP_19_vM_(newcomp).hsc'   #VERSÃO ATUAL DO ARQUIVO HYSYS DA SIMULAÇÃO ESSENCIAL'
 hconect, simCase, hyApp = Hysysconect(filename) # Conexão com hysys
 print('Conexão realizada')
 print('')
