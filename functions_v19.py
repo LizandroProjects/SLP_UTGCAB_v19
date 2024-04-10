@@ -174,6 +174,10 @@ def SLP(simCase, edata, obj, R_min, R_max, R_cap, Carga, FObj_type):
         model     -> Objeto com todos os dados da otimização LP
         
     [5] OBSERVAÇÕES: Ao longo do código adicionaremos algumas anotações para facilitar a compreensão das considerações utilizadas
+    
+    [6] Modificações:
+        
+    07 de abril de 2024: Inclusão de flags para gravar restricções violadas
     *************************************************************************************************************************************
     '''
     
@@ -229,7 +233,8 @@ def SLP(simCase, edata, obj, R_min, R_max, R_cap, Carga, FObj_type):
     ZF_min = 0.6e6  # valor mínimo de vazão de reciclo da UPCGN para normalização do desvio [atribuído heuristicamente]
     ZF_max = 9e6    # valor máximo de vazão de reciclo da UPCGN para normalização do desvio [atribuído heuristicamente]
     ix = np.linspace(0, itmax, itmax) # vetor de iterações para plotagem
-
+    flag_max=np.zeros(14) # flag para gravar restricoes de mínimo já violadas
+    flag_min=np.zeros(14) # flag para gravar restricoes de máximo já violadas
     
     'Ativando a simulação Essencial'
     simCase.Solver.CanSolve = True # Isso é necessário, pois nesse momento vamos ler algumas variáveis como reciclo da UPCGN
@@ -363,35 +368,46 @@ def SLP(simCase, edata, obj, R_min, R_max, R_cap, Carga, FObj_type):
         itens_min = list(R_min.values())
         keys = list(R_min.keys())        
         for k in range(np.size(y_base)):
-            if y_base[k]<itens_min[k]:
-                print('************************************')
-                print('Violação do valor mínimo: ', keys[k], '=', itens_min[k], '>', y_base[k]  )
-                print('Incluindo restrição no LP')
-                print('************************************')
+            if y_base[k]<itens_min[k] or flag_min[k]!=0:
+                if flag_min[k] == 0:
+                    print('************************************')
+                    print('Violação do valor mínimo: ', keys[k], '=', itens_min[k], '>', y_base[k]  )
+                    print('Incluindo restrição no LP')
+                    print('************************************')
+                else:
+                    print('************************************')
+                    print('Mantendo restrição no LP já violada previamente')
+                    print('Violação do valor mínimo anterior: ', keys[k], '<', itens_min[k]  )
+                    print('************************************')
                 val_rest = (y_base[k] + 
                             dC_dF[0,k]*(G_295toGASDUC-G_295toGASDUC_0) + dC_dF[1,k]*(G_295toURGN-G_295toURGN_0) + dC_dF[2,k]*(G_295toURLs-G_295toURLs_0) + dC_dF[3,k]*(G_295toUPGN-G_295toUPGN_0) + 
                             dC_dF[4,k]*(G_299toGASDUC-G_299toGASDUC_0) + dC_dF[5,k]*(G_295toURGN-G_295toURGN_0) + dC_dF[6,k]*(G_299toURLs-G_299toURLs_0) + dC_dF[7,k]*(G_299toUPGN-G_299toUPGN_0) +
                             dC_dF[8,k]*(G_302toURLs-G_302toURLs_0) + dC_dF[9,k]*(G_302toUPGN-G_302toUPGN_0) + dC_dF[10,k]*(G_302toMIX-G_302toMIX_0)) 
                 val_rest = (y_base[k] + dC_dF[10,k]*(G_302toMIX-G_302toMIX_0))
                 model += ((val_rest) - float(itens_min[k]) >= 0, keys[k]) # Restrição Incluída
-
+                flag_min[k]=1
         'avaliação das restrições máximas'            
         itens_max = list(R_max.values())
         keys = list(R_max.keys())        
         for k in range(np.size(y_base)):
-            if y_base[k]>itens_max[k]:
-                print('************************************')
-                print('Violação do valor máximo: ', keys[k],'=', itens_max[k], '<', y_base[k])
-                print('************************************')
-                print('Incluindo restrição no LP')
-                print('************************************')
+            if y_base[k]>itens_max[k] or flag_max[k]!=0:
+                if flag_max[k] == 0:
+                    print('************************************')
+                    print('Violação do valor máximo: ', keys[k],'=', itens_max[k], '<', y_base[k])
+                    print('Incluindo restrição no LP')
+                    print('************************************')
+                else:
+                    print('************************************')
+                    print('Mantendo restrição no LP já violada previamente')
+                    print('Violação do valor máximo anterior: ', keys[k], '>', itens_max[k]  )
+                    print('************************************')
                 val_rest = (y_base[k] + 
                             dC_dF[0,k]*(G_295toGASDUC-G_295toGASDUC_0) + dC_dF[1,k]*(G_295toURGN-G_295toURGN_0) + dC_dF[2,k]*(G_295toURLs-G_295toURLs_0) + dC_dF[3,k]*(G_295toUPGN-G_295toUPGN_0) + 
                             dC_dF[4,k]*(G_299toGASDUC-G_299toGASDUC_0) + dC_dF[5,k]*(G_295toURGN-G_295toURGN_0) + dC_dF[6,k]*(G_299toURLs-G_299toURLs_0) + dC_dF[7,k]*(G_299toUPGN-G_299toUPGN_0) +
                             dC_dF[8,k]*(G_302toURLs-G_302toURLs_0) + dC_dF[9,k]*(G_302toUPGN-G_302toUPGN_0) + dC_dF[10,k]*(G_302toMIX-G_302toMIX_0)) 
                 val_rest = (y_base[k] + dC_dF[10,k]*(G_302toMIX-G_302toMIX_0))
                 model += ((val_rest - float(itens_max[k])) <= 0, keys[k]) # Restrição Incluída
-    
+                flag_max[k] = 1
         'Função Objetivo (Linealizada no ponto base)'
         model += (f_OBJ_Base + 
                   d_299toGASDUC*(G_299toGASDUC-G_299toGASDUC_0) + d_295toGASDUC*(G_295toGASDUC-G_295toGASDUC_0) +
@@ -887,9 +903,9 @@ def SpecVar(edata, obj, R_especs):
     
     
     # Versão 19 [CO2 nas URLs]
-    SS_URLI.Cell('C5').CellValue = e29 # FRAÇÃO MOLAR de C1 no fundo da T01 DA URL-1 (CALCULADA PELA SIMULAÇÃO RIGOROSA)
-    SS_URLII.Cell('C5').CellValue = e30 # FRAÇÃO MOLAR DE C2 NO TOPO DA T01 DA URL-1 (CALCULADA PELA SIMULAÇÃO RIGOROSA)  
-    SS_URLIII.Cell('C5').CellValue = e31 # FRAÇÃO MOLAR DE C2 NO TOPO DA T01 DA URL-1 (CALCULADA PELA SIMULAÇÃO RIGOROSA)
+    SS_URLI.Cell('C5').CellValue = e29*0.95 # FRAÇÃO MOLAR de C1 no fundo da T01 DA URL-1 (CALCULADA PELA SIMULAÇÃO RIGOROSA)
+    SS_URLII.Cell('C5').CellValue = e30*0.95 # FRAÇÃO MOLAR DE C2 NO TOPO DA T01 DA URL-1 (CALCULADA PELA SIMULAÇÃO RIGOROSA)  
+    SS_URLIII.Cell('C5').CellValue = e31*0.95 # FRAÇÃO MOLAR DE C2 NO TOPO DA T01 DA URL-1 (CALCULADA PELA SIMULAÇÃO RIGOROSA)
   
     'Exportando as vazões das SANGRIAS'
 
