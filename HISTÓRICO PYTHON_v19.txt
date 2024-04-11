@@ -12,15 +12,27 @@ A2. Foi criada, na saída de cada corrente que representa a vazão de uma unidad
 
 A3. Foi criada uma VS nas saídas das unidades, com criação de correntes Cópias dos produtos, mantendo-se a mesma lógicva implementada em A2, com excessão que o campo "offset" é sempre zero. Desse modo, se a unidade foir desativada, a vazão de saída resultante da VS é zero, anulando seu efeito na receita. 
 
-NOTA: Em resumo, a lógica de ativação e desativação das unidades é o seguinte:
+NOTA: Em resumo, a lógica de ativação e desativação das unidades é o seguinte (na planilha STATUS UNIDADES):
 
 Status 0: unidade desativada; multiplicador da VS = 0; offset da VS = 1e6; vazão de entrada da unidade = 1e6; vazão de saída da unidade = 0;
 Status 1: unidade ativada;  multiplicador da VS = 1; offset da VS = 0; vazão de entrada da unidade = calculada no python; vazão de saída da unidade = simulada;
+NOTA: Essa 
 
 A4. Os valores dos Status, são utilizados na planilha CUSTO, LInha I2 até R2. E são multiplicados pelas equações dos custos. Desse modo, o custo referente a uma determinada unidade é zero, caso o status seja zero. 
 
-A5. Os valores das especificações de CO2 da corrente de topo da torre Deseta das URLs são importadas da simulação rigorosa para a simulação Essencial.
+A5. No código, função SLP, criamos uma lógica para manter as derivadas já violadas em alguma iteração. As flags: 
+"flag_max=np.zeros(14) # flag para gravar restricoes de mínimo já violadas"
+"flag_min=np.zeros(14) # flag para gravar restricoes de máximo já violadas"
+foram criadas para identificar e manter as restrições uma vez violadas.
+
+++++++++++++Atualizações na simulação Hysys LP_19_vM_(newcomp).hsc.++++++++++++
+
+A1. Os valores das especificações de CO2 da corrente de topo da torre Deseta das URLs são importadas da simulação rigorosa para a simulação Essencial.
 OBS.: Foram corrigidas as frações mássicas de C1 (fundo) e C2,C3 (topo) da torre Deseta das URLs. 
+
+A2. Foi incorporado o vaso separador trifásico na UPGN-II da simulação Essencial. "Precisa de um  vaso trifásico na UPGN p tirar a água, porque dependendo 
+da condição inicial ( o Paiva forçou uma carga da UPGN com maior parte vindo da BC, ou seja, do 295 e 299, os coletores que tem bastante água , o 302 não tem) 
+opode-se atingir a restrição do POA no Gv por conta da quantidade de água no GR da UPGN".
 
 
 
