@@ -377,7 +377,6 @@ def SLP(simCase, edata, obj, R_min, R_max, R_cap, Carga, FObj_type):
                 else:
                     print('************************************')
                     print('Mantendo restrição no LP já violada previamente')
-                    print('************************************')
                     print('Violação do valor mínimo anterior: ', keys[k], '<', itens_min[k]  )
                     print('************************************')
                 val_rest = (y_base[k] + 
@@ -395,13 +394,11 @@ def SLP(simCase, edata, obj, R_min, R_max, R_cap, Carga, FObj_type):
                 if flag_max[k] == 0:
                     print('************************************')
                     print('Violação do valor máximo: ', keys[k],'=', itens_max[k], '<', y_base[k])
-                    print('************************************')
                     print('Incluindo restrição no LP')
                     print('************************************')
                 else:
                     print('************************************')
                     print('Mantendo restrição no LP já violada previamente')
-                    print('************************************')
                     print('Violação do valor máximo anterior: ', keys[k], '>', itens_max[k]  )
                     print('************************************')
                 val_rest = (y_base[k] + 
