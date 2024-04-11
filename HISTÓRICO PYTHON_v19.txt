@@ -16,7 +16,7 @@ NOTA: Em resumo, a lógica de ativação e desativação das unidades é o segui
 
 Status 0: unidade desativada; multiplicador da VS = 0; offset da VS = 1e6; vazão de entrada da unidade = 1e6; vazão de saída da unidade = 0;
 Status 1: unidade ativada;  multiplicador da VS = 1; offset da VS = 0; vazão de entrada da unidade = calculada no python; vazão de saída da unidade = simulada;
-NOTA: Essa 
+
 
 A4. Os valores dos Status, são utilizados na planilha CUSTO, LInha I2 até R2. E são multiplicados pelas equações dos custos. Desse modo, o custo referente a uma determinada unidade é zero, caso o status seja zero. 
 
