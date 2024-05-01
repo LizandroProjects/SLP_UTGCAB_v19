@@ -6,7 +6,7 @@ FUNÇÃO QUE CONTÉM AS FUNÇÕES AUXILIARES PARA O PROGRAMA
 AUTORES: LADES(PEQ-COPPE) / UFF / CENPES 
 
 EQUIPE: Carlos Rodrigues Paiva
-        Thamirez
+        Thamires
         Roymel
         Cesar
         Lizandro Santos
@@ -343,7 +343,7 @@ def SLP(simCase, edata, obj, R_min, R_max, R_cap, Carga, FObj_type):
         
         
         'Criação do objeto "model" para construção do modelo no pulp'
-        model = LpProblem(name="Cabiunas_LP", sense=LpMaximize)
+        model = LpProblem(name="Essencial_LP", sense=LpMaximize)
         
         'Definição das variaveis de decisão no PULP'
                    
@@ -962,7 +962,7 @@ def Hysysconect(filename):
     [3] DADOS DE ENTRADA: 
         filename-> Nome do arquivo a ser simulado;
     
-    [4] DADOS DE SAÌDA: 
+    [4] DADOS DE SAÍDA: 
         filename  -> Flag para indicar sucesso ou insucesso da comunicação
         simCase   -> Objeto resultante da comunicação
         hyApp     -> Objeto resultante da comunicação

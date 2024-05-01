@@ -3,11 +3,11 @@ CÓDIGO DE OTIMIZAÇÃO LINEAR SEQUENCIAL DA UCGCAB [optLP.py]
 
 AUTORES: LADES(PEQ-COPPE) / UFF / CENPES 
 
-EQUIPE: Carlos Paiva
-        Thamirez
+EQUIPE: Carlos Rodrigues Paiva
+        Thamires
         Roymel
         Cesar
-        Lizandro
+        Lizandro Santos
         Dorigo
         Argimiro
         
@@ -23,7 +23,7 @@ rotina é dividida nas seguintes funções:
     Hysysconect -> função usada para conecção com o HYSYS
     InputObjects -> função usada para criação dos objetos de comunicação
     SpecVar -> função usada para especificação de variáveis
-    SpecLP -> função usada para especificações do LP [valores dos limites e cargas] de acordo com sintaze do PULP
+    SpecLP -> função usada para especificações do LP [valores dos limites e cargas] de acordo com sintaxe do PULP
     SLP -> função de chamada da função de otimização Programação Linear
     
    

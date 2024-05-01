@@ -333,8 +333,8 @@ def simula_detalhada(simCase, config, inputs, cargas):
     simulação rogorosa (utilizada no modo offline) e importadas para a simulação Essencial.
     
     [3] DADOS DE ENTRADA: 
-        edata   -> Dicionário resultante da leitura da dedos da planilha Input_Data.xlsx;
-        obj     -> Dicionário contendo os objetos resultantes das variáveis e spreadsheets do hsysys que serão utilizados
+        edata   -> Dicionário resultante da leitura da dados da planilha Input_Data.xlsx;
+        obj     -> Dicionário contendo os objetos resultantes das variáveis e spreadsheets do hysys que serão utilizados
         R_especs-> Dicionário contendo as especificações importadas da simulação rigorosa
     
     [4] DADOS DE SAÌDA: 
