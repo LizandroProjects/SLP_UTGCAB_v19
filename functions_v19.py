@@ -76,14 +76,14 @@ def InputObjects(simCase):
     
     [2] EXPLICAÇÃO: Essa é utilizada para realizar a otimização linear sequencial do processo. Um modelo linear, baseado nas equações
     de balanço de massa global, é utilizado e implementado, nessa versão, na toolbox PULP (https://coin-or.github.io/pulp/index.html).
-    Uma explicação detalhada do procesimento matemático está documentada do arquivo ProgramaçãoLinearSucessiva.ppx da pasta do projeto.
+    Uma explicação detalhada do procedimento matemático está documentada do arquivo ProgramaçãoLinearSucessiva.ppx da pasta do projeto.
     A função SLP deve receber algumas variáveis e parâmetros, para possibilitar a comunicação e troca de "informações" entre o Python e
     o Hysys, de modo a possibilitar a otimização. 
     
     [3] DADOS DE ENTRADA: 
         simCase -> Objeto resultante da comunicação entre Python e Hysys (usado para abrir, fechar e ou iniciar a simulação);
         edata   -> Dicionário contendo os valores de parâmetros e variáveis do arquivo de entrada Input.xls;
-        obj     -> Dicionário contendo os objetos resultantes das variáveis e spreadsheets do hsysys que serão utilizados
+        obj     -> Dicionário contendo os objetos resultantes das variáveis e spreadsheets do hysys que serão utilizados
         R_min   -> Dicionário contendo os valores mínimos das restrições das especificações de produtos
         R_max   -> Dicionário contendo os valores máximos das restrições das especificações de produtos
         R_cap   -> Dicionário contendo os valores das restrições de capacidade das unidades
@@ -114,8 +114,8 @@ def InputObjects(simCase):
     SS_Receita             = simCase.Flowsheet.Operations.Item('RECEITA')            # planilha de cálculo da receita
     SS_Rest                = simCase.Flowsheet.Operations.Item('RESTRIÇÕES')            # planilha de cálculo das restrições
     SS_URLI                = simCase.Flowsheet.Flowsheets.Item("TPL4").Flowsheets.Item("TPL22").Operations.Item("Spread_URLI") # Spreadsheet da URL-I
-    SS_URLII               = simCase.Flowsheet.Flowsheets.Item("TPL4").Flowsheets.Item("TPL23").Operations.Item("Spread_URLII") # Spreadsheet da URL-I
-    SS_URLIII              = simCase.Flowsheet.Flowsheets.Item("TPL4").Flowsheets.Item("TPL24").Operations.Item("Spread_URLIII") # Spreadsheet da URL-I
+    SS_URLII               = simCase.Flowsheet.Flowsheets.Item("TPL4").Flowsheets.Item("TPL23").Operations.Item("Spread_URLII") # Spreadsheet da URL-II
+    SS_URLIII              = simCase.Flowsheet.Flowsheets.Item("TPL4").Flowsheets.Item("TPL24").Operations.Item("Spread_URLIII") # Spreadsheet da URL-III
     SS_UPCGN               = simCase.Flowsheet.Flowsheets('TPL15').Operations.Item('prop_UPCGNs')       # planilha de cálculo de propriedades das UPCGNs
     SS_f_OBJ               = simCase.Flowsheet.Operations.Item('f_OBJ')  #planilha para o cálculo da função objetivo
     SS_STATUS_UNIDADES     = simCase.Flowsheet.Operations.Item('STATUS UNIDADES')  # versão_19 (planilha com STATUS DAS UNIDADES)
