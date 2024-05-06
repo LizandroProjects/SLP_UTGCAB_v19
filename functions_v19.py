@@ -45,6 +45,8 @@ from numpy import linalg as la # Bibliotecas de álgebra linear
 from pulp import pulp, LpMaximize, LpProblem, LpStatus, LpVariable  # Biblioteca Pulp # Referencias: https://coin-or.github.io/pulp/index.html
 import timeit # Contador de tempo computacional
 import xlsxwriter # escrever em excel
+from time import sleep # Usar a função sleep para atrasar o cálculo seguinte, se necessário
+
 from func_auxiliar import (aloca_cargas,  # funcções auxiliares para rodar a simulação rogorosa (peguei da versão implementada no servidor)
                             ler_config,
                             ler_inputs,
@@ -1346,8 +1348,15 @@ def plot_derivatives(dR_dF, index):
     ax.set_title(title_list[index])
     ax.legend(title='Derivadas', loc=(1, 0))
 
+   # Ativando o modo interativo
+    plt.ion()
+
+    # Mostrando o gráfico
     plt.show()
-    plt.close()
+
+
+    sleep(5)
+    plt.close(fig)
 
 def plot_manipuladas(manip, index):
     
