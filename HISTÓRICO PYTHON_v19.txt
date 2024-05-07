@@ -1,4 +1,4 @@
-####################### HISTÓRICO optLP_v19.py ##############################
+######################## HISTÓRICO optLP_v19.py ##############################
 
 NOTA: Nessa versão, o código python se manteve o mesmo da versão anterior. No entanto, a simulação, (versão 19), agora é baseada no uso de virtual streams, para ativação e desativação das unidades, a ser explicada no parágrafo seguinte.
 
