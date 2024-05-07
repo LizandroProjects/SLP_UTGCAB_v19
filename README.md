@@ -27,4 +27,4 @@ Avise se você preccisou aprovar ou não.
 dR_dF[i] = ( f_OBJ[i] - f_OBJ_Base ) / delta[i] # Cálculo da Derivada [usando o ponto_base]
                 dC_dF[i,:] = (y - y_base) / delta[i] # Cálculo da Derivada das restriçoes
 
-                
+
