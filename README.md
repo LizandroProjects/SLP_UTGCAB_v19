@@ -3,11 +3,6 @@
 Dia 20240430: Teste de PR para aprovação.
 Avise se você preccisou aprovar ou não.
 
-# COMENTÁRIOS DO PAIVA
-
-Dia 20240430: Teste de PR para aprovação.
-Avise se você preccisou aprovar ou não.
-
 <<<<<<< ramo-01
 ## As linhas abaixo necessitam de atenção - linha 905 do arquivo functions_v19.py
  # Versão 19 [CO2 nas URLs]
