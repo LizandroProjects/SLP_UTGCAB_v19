@@ -6,7 +6,7 @@ FUNÇÃO QUE CONTÉM AS FUNÇÕES AUXILIARES PARA O PROGRAMA
 AUTORES: LADES(PEQ-COPPE) / UFF / CENPES 
 
 EQUIPE: Carlos Rodrigues Paiva
-        Thamirez
+        Thamires
         Roymel
         Cesar
         Lizandro Santos
@@ -45,6 +45,8 @@ from numpy import linalg as la # Bibliotecas de álgebra linear
 from pulp import pulp, LpMaximize, LpProblem, LpStatus, LpVariable  # Biblioteca Pulp # Referencias: https://coin-or.github.io/pulp/index.html
 import timeit # Contador de tempo computacional
 import xlsxwriter # escrever em excel
+from time import sleep # Usar a função sleep para atrasar o cálculo seguinte, se necessário
+
 from func_auxiliar import (aloca_cargas,  # funcções auxiliares para rodar a simulação rogorosa (peguei da versão implementada no servidor)
                             ler_config,
                             ler_inputs,
@@ -76,14 +78,14 @@ def InputObjects(simCase):
     
     [2] EXPLICAÇÃO: Essa é utilizada para realizar a otimização linear sequencial do processo. Um modelo linear, baseado nas equações
     de balanço de massa global, é utilizado e implementado, nessa versão, na toolbox PULP (https://coin-or.github.io/pulp/index.html).
-    Uma explicação detalhada do procesimento matemático está documentada do arquivo ProgramaçãoLinearSucessiva.ppx da pasta do projeto.
+    Uma explicação detalhada do procedimento matemático está documentada do arquivo ProgramaçãoLinearSucessiva.ppx da pasta do projeto.
     A função SLP deve receber algumas variáveis e parâmetros, para possibilitar a comunicação e troca de "informações" entre o Python e
     o Hysys, de modo a possibilitar a otimização. 
     
     [3] DADOS DE ENTRADA: 
         simCase -> Objeto resultante da comunicação entre Python e Hysys (usado para abrir, fechar e ou iniciar a simulação);
         edata   -> Dicionário contendo os valores de parâmetros e variáveis do arquivo de entrada Input.xls;
-        obj     -> Dicionário contendo os objetos resultantes das variáveis e spreadsheets do hsysys que serão utilizados
+        obj     -> Dicionário contendo os objetos resultantes das variáveis e spreadsheets do hysys que serão utilizados
         R_min   -> Dicionário contendo os valores mínimos das restrições das especificações de produtos
         R_max   -> Dicionário contendo os valores máximos das restrições das especificações de produtos
         R_cap   -> Dicionário contendo os valores das restrições de capacidade das unidades
@@ -114,8 +116,8 @@ def InputObjects(simCase):
     SS_Receita             = simCase.Flowsheet.Operations.Item('RECEITA')            # planilha de cálculo da receita
     SS_Rest                = simCase.Flowsheet.Operations.Item('RESTRIÇÕES')            # planilha de cálculo das restrições
     SS_URLI                = simCase.Flowsheet.Flowsheets.Item("TPL4").Flowsheets.Item("TPL22").Operations.Item("Spread_URLI") # Spreadsheet da URL-I
-    SS_URLII               = simCase.Flowsheet.Flowsheets.Item("TPL4").Flowsheets.Item("TPL23").Operations.Item("Spread_URLII") # Spreadsheet da URL-I
-    SS_URLIII              = simCase.Flowsheet.Flowsheets.Item("TPL4").Flowsheets.Item("TPL24").Operations.Item("Spread_URLIII") # Spreadsheet da URL-I
+    SS_URLII               = simCase.Flowsheet.Flowsheets.Item("TPL4").Flowsheets.Item("TPL23").Operations.Item("Spread_URLII") # Spreadsheet da URL-II
+    SS_URLIII              = simCase.Flowsheet.Flowsheets.Item("TPL4").Flowsheets.Item("TPL24").Operations.Item("Spread_URLIII") # Spreadsheet da URL-III
     SS_UPCGN               = simCase.Flowsheet.Flowsheets('TPL15').Operations.Item('prop_UPCGNs')       # planilha de cálculo de propriedades das UPCGNs
     SS_f_OBJ               = simCase.Flowsheet.Operations.Item('f_OBJ')  #planilha para o cálculo da função objetivo
     SS_STATUS_UNIDADES     = simCase.Flowsheet.Operations.Item('STATUS UNIDADES')  # versão_19 (planilha com STATUS DAS UNIDADES)
@@ -161,7 +163,7 @@ def SLP(simCase, edata, obj, R_min, R_max, R_cap, Carga, FObj_type):
     [3] DADOS DE ENTRADA: 
         simCase -> Objeto resultante da comunicação entre Python e Hysys (usado para abrir, fechar e ou iniciar a simulação);
         edata   -> Dicionário contendo os valores de parâmetros e variáveis do arquivo de entrada Input.xls;
-        obj     -> Dicionário contendo os objetos resultantes das variáveis e spreadsheets do hsysys que serão utilizados
+        obj     -> Dicionário contendo os objetos resultantes das variáveis e spreadsheets do hysys que serão utilizados
         R_min   -> Dicionário contendo os valores mínimos das restrições das especificações de produtos
         R_max   -> Dicionário contendo os valores máximos das restrições das especificações de produtos
         R_cap   -> Dicionário contendo os valores das restrições de capacidade das unidades
@@ -177,7 +179,7 @@ def SLP(simCase, edata, obj, R_min, R_max, R_cap, Carga, FObj_type):
     
     [6] Modificações:
         
-    07 de abril de 2024: Inclusão de flags para gravar restricções violadas
+    07 de abril de 2024: Inclusão de flags para gravar restrições violadas
     *************************************************************************************************************************************
     '''
     
@@ -223,8 +225,8 @@ def SLP(simCase, edata, obj, R_min, R_max, R_cap, Carga, FObj_type):
     manip = np.zeros([itmax, nD]) #Matriz das var manipuladas para receita
     x =[] # variáveis de decisão
     desvio = 1e-3 # desvio inicial para início do processo iterativo [SE FOR USAD]...
-    index=0 # contado de iterações (inicia com valor zero)
-    f_OBJ=np.zeros(nD) # Definindindo o vetor da função OBJETIVO
+    index=0 # contador de iterações (inicia com valor zero)
+    f_OBJ=np.zeros(nD) # Definindo o vetor da função OBJETIVO
     dR_dF=np.zeros(nD) # Definindo o vetor das derivadas das Margens
     dC_dF=np.zeros([nD, nC]) #Definindo a matriz das derivadas das restriçoes dos produtos
     delta=np.zeros(nD) # Perturbação da derivada
@@ -291,7 +293,7 @@ def SLP(simCase, edata, obj, R_min, R_max, R_cap, Carga, FObj_type):
         'Obtenção da Função_Objetivo_Base, Corrente de Reciclo UPCGN e Vazões_Base das Unidades'  
         f_OBJ_Base, Reciclo_UPCGN, Cargas_Unidades, Receita, Custo = SimulaLP(x0, G_Rec_UPCGNs_in,G_Rec_UPCGNs_C_in, obj) # Reciclo_UPCGN -> Dicionário com Vazões e Composições do reciclo UPCGN 
                                                                                                       # Cargas_Unidades -> Vazão de carga das unidades
-        'Obtenção dos valores-base das condições dass correntes de produto (GV e GLP)'
+        'Obtenção dos valores-base das condições das correntes de produto (GV e GLP)'
         y_base = Spec_prods(x0, 0, obj)
         
         index = index + 1 # Atualização do contador
@@ -343,7 +345,7 @@ def SLP(simCase, edata, obj, R_min, R_max, R_cap, Carga, FObj_type):
         
         
         'Criação do objeto "model" para construção do modelo no pulp'
-        model = LpProblem(name="Cabiunas_LP", sense=LpMaximize)
+        model = LpProblem(name="Essencial_LP", sense=LpMaximize)
         
         'Definição das variaveis de decisão no PULP'
                    
@@ -576,7 +578,7 @@ def SpecLP(edata, obj):
     
     [3] DADOS DE ENTRADA: 
         edata   -> Dicionário resultante da leitura da dedos da planilha Input_Data.xlsx;
-        obj     -> Dicionário contendo os objetos resultantes das variáveis e spreadsheets do hsysys que serão utilizados
+        obj     -> Dicionário contendo os objetos resultantes das variáveis e spreadsheets do hysys que serão utilizados
     
     [4] DADOS DE SAÌDA: 
         cod_speclp   -> Flag para indicar sucesso ou insucesso do cálculo
@@ -699,7 +701,7 @@ def SpecVar(edata, obj, R_especs):
     
     [3] DADOS DE ENTRADA: 
         edata   -> Dicionário resultante da leitura da dedos da planilha Input_Data.xlsx;
-        obj     -> Dicionário contendo os objetos resultantes das variáveis e spreadsheets do hsysys que serão utilizados
+        obj     -> Dicionário contendo os objetos resultantes das variáveis e spreadsheets do hysys que serão utilizados
         R_especs-> Dicionário contendo as especificações importadas da simulação rigorosa
     
     [4] DADOS DE SAÌDA: 
@@ -962,7 +964,7 @@ def Hysysconect(filename):
     [3] DADOS DE ENTRADA: 
         filename-> Nome do arquivo a ser simulado;
     
-    [4] DADOS DE SAÌDA: 
+    [4] DADOS DE SAÍDA: 
         filename  -> Flag para indicar sucesso ou insucesso da comunicação
         simCase   -> Objeto resultante da comunicação
         hyApp     -> Objeto resultante da comunicação
@@ -1120,7 +1122,7 @@ def SimulaLP(x, G_Rec_UPCGNs_in,G_Rec_UPCGNs_C_in,obj):
         x       -> Variáveis de decisão;
         G_Rec_UPCGNs_in    -> Vazão da corrente de reciclo da UPCGN que SAI das UPCGNs
         G_Rec_UPCGNs_C_in  -> Fração molar dos componentes da corrente de reciclo da UPCGN que SAI das UPCGNs
-        obj             -> Dicionário contendo os objetos resultantes das variáveis e spreadsheets do hsysys que serão utilizados
+        obj             -> Dicionário contendo os objetos resultantes das variáveis e spreadsheets do hysys que serão utilizados
     
     [4] DADOS DE SAÌDA: 
         Receita        -> valor da RECEITA
@@ -1135,7 +1137,7 @@ def SimulaLP(x, G_Rec_UPCGNs_in,G_Rec_UPCGNs_C_in,obj):
     '''
     
 
-    # x são os valores "estimativas iniciais" das vazões (variávei, s de decisão)
+    # x são os valores "estimativas iniciais" das vazões (variáveis de decisão)
 
     'Descompactando o dicionário obj'
     
@@ -1257,14 +1259,14 @@ def Spec_prods(x, delta_MIX, obj):
     [1] DESCRIÇÃO: Spec_prods: Rotina que obtem os valores das restrições de produtos. 
     
     [2] EXPLICAÇÃO: Essa função é utilizada para obter os valores das restrições de produtos, dadas os valores das variáveis
-    de decisão. A função tamb´me pode ser utilizada para calcular as derivadas das derivadas das especificações em relação às
+    de decisão. A função tambem pode ser utilizada para calcular as derivadas das derivadas das especificações em relação às
     variáveis de decisão.
     
     [3] DADOS DE ENTRADA: 
         x -> variáveis de decisão;
         delta_MIX -> magnitude da perturbação da vazão MIX. OBS: Em princípio, só consideramos essa variável para o cálculo
         da derivada.
-        obj       -> Dicionário contendo os objetos resultantes das variáveis e spreadsheets do hsysys que serão utilizados
+        obj       -> Dicionário contendo os objetos resultantes das variáveis e spreadsheets do hysys que serão utilizados
     
     [4] DADOS DE SAÌDA: 
         specs      -> Dicionário contendo os valores das especificações de produtos resultantes da simulação.
@@ -1346,7 +1348,15 @@ def plot_derivatives(dR_dF, index):
     ax.set_title(title_list[index])
     ax.legend(title='Derivadas', loc=(1, 0))
 
+   # Ativando o modo interativo
+    plt.ion()
+
+    # Mostrando o gráfico
     plt.show()
+
+
+    sleep(5)
+    plt.close(fig)
 
 def plot_manipuladas(manip, index):
     
